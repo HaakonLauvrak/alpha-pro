@@ -2,7 +2,7 @@
 board_size = 4
 
 #The number of initial stones N in nim and the number of stones that can be removed each turn K
-nim_N = 50
+nim_N = 7
 nim_K = 5
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.

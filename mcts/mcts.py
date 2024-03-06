@@ -2,7 +2,6 @@ import math
 import random
 import numpy as np
 from anytree import Node, RenderTree
-
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
     
 class MCTSNode(Node):
@@ -68,9 +67,11 @@ class MonteCarloTreeSearch:
         best_child = []
         for child in node.children:
             score = MonteCarloTreeSearch.Q(child, node.state[1]) + MonteCarloTreeSearch.u(node, child)
-            if score >= max_score:
-                max_score = score
+            if score == max_score:
                 best_child.append(child)
+            elif score > max_score:
+                max_score = score
+                best_child = [child]
         return random.choice(best_child)
 
     @staticmethod
@@ -91,12 +92,9 @@ class MonteCarloTreeSearch:
         return 0.2*np.sqrt(math.log((s.visits) /(1 + a.visits)))
 
     def search(self):
-        for _ in range(1000000):
+        for _ in range(100000):
             node = self.select_node()
             self.expand_node(node)
             self.rollout(node)
         return self.best_action()
 
-state_mng = NIM_STATE_MANAGER(1)
-mcts = MonteCarloTreeSearch([5, 1], None, state_mng)
-print(mcts.search())
