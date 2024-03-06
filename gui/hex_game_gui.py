@@ -1,21 +1,21 @@
 import math
 import sys
 import pygame
+import config.config as config
 
 from gui.hex_board import HEX_BOARD
 
 
 class HEX_GAME_GUI():
-    def __init__(self, board_size):
+    def __init__(self):
         pygame.init()
-        self.board_size = board_size
+        self.board_size = config.board_size
         self.cell_radius = 30
-        self.screen_width = 3 * self.cell_radius * board_size
-        self.screen_height = int(1.75 * self.cell_radius * board_size)
+        self.screen_width = 3 * self.cell_radius * config.board_size
+        self.screen_height = int(1.75 * self.cell_radius * config.board_size)
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        self.board = HEX_BOARD(board_size)
-        self.colors = {0: (255, 255, 255), 1: (255, 0, 0), 2: (0, 0, 255)}
-        
+        self.colors = {0: (255, 255, 255), 1: (255, 0, 0), -1: (0, 255, 0)}
+
     def draw_hex(self, x, y, color):
         # Now drawing hexagons instead of triangles
         points = [(math.cos(2 * math.pi / 6 * i) * self.cell_radius + x,
@@ -23,7 +23,10 @@ class HEX_GAME_GUI():
                   for i in range(6)]
         pygame.draw.polygon(self.screen, color, points)
 
-    def draw_board(self):
+    def updateBoard(self, board):
+        self.board = board
+
+    def drawBoard(self):
         self.screen.fill((0, 0, 0)) 
 
         dx = self.cell_radius * 3**0.5
@@ -51,7 +54,7 @@ class HEX_GAME_GUI():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-            self.draw_board()
+            self.drawBoard()
             clock.tick(60)
         pygame.quit()
         sys.exit()

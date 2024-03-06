@@ -9,10 +9,6 @@ class STATE_MANAGER(ABC):
         self.state = state
 
     @abstractmethod
-    def generateInitialState(self, player_to_start):
-        pass
-
-    @abstractmethod
     def getLegalMoves(self, state):
         pass
 

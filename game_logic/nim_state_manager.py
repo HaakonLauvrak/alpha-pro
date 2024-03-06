@@ -4,13 +4,10 @@ import config.config as config
 class NIM_STATE_MANAGER(STATE_MANAGER):
 
     def __init__(self, player_to_start):
-        self.state = self.generateInitialState(player_to_start)
+        self.state = [config.nim_N, player_to_start]
 
     def getState(self):
         return self.state
-    
-    def generateInitialState(self, player_to_start):
-        return [config.nim_N, player_to_start]
     
     def getLegalMoves(self, state):
         return [i for i in range(1, (min(config.nim_K, state[0])) + 1)]
