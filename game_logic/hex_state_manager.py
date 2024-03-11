@@ -13,6 +13,8 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         return self.state
     
     def getLegalMoves(self, state) -> list:
+        if self.isGameOver(state):
+            return []
         return [cell.position for cell in state[0].get_cells() if cell.state == 0]
     
     def makeMove(self, move) -> None:

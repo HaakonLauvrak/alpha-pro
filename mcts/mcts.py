@@ -121,7 +121,7 @@ class MonteCarloTreeSearch:
         return 0.2*np.sqrt(math.log((s.visits) / (1 + a.visits)))
 
     def search(self):
-        for _ in range(1000):
+        for _ in range(10000):
             node = self.select_node()
             self.expand_node(node)
             self.rollout(node)
