@@ -1,9 +1,6 @@
 from abc import ABC, abstractmethod
 
 class STATE_MANAGER(ABC):
-       
-    def getState(self):
-        return self.state
     
     def setState(self, state):
         self.state = state

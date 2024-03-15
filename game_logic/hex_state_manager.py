@@ -5,36 +5,31 @@ from game_logic.state_manager import STATE_MANAGER
 
 
 class HEX_STATE_MANAGER(STATE_MANAGER):
-    def __init__(self, player_to_start, gui):
-        self.state = [HEX_BOARD(config.board_size), player_to_start]
-        self.gui = gui
 
-    def getState(self):
-        return self.state
+    def __init__(self, gui) -> None:
+        self.gui = gui
     
     def getLegalMoves(self, state) -> list:
         if self.isGameOver(state):
             return []
         return [cell.position for cell in state[0].get_cells() if cell.state == 0]
     
-    def makeMove(self, move) -> None:
-        if move not in self.getLegalMoves(self.state):
+    def makeMove(self, move, state) -> None:
+        if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move")
-        self.state[0].set_cell(move, self.state[1])
-        self.state[1] = 1 if self.state[1] == -1 else -1
-        self.gui.updateBoard(self.state[0])
+        state[0].set_cell(move, state[1])
+        state[1] = 1 if state[1] == -1 else -1
+        self.gui.updateBoard(state[0])
     
     def simulateMove(self, move, state) -> tuple:
         if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move")
         
-        new_board = HEX_BOARD(config.board_size)
-
-        for cell in state[0].get_cells():
-            new_board.set_cell(cell.position, cell.state)
+        new_board = copy.deepcopy(state[0])
         new_board.set_cell(move, state[1])
-        new_player_turn = -state[1]
+        new_player_turn = 1 if state[1] == -1 else -1
         return [new_board, new_player_turn]
+       
         
         
     def isGameOver(self, state) -> bool:

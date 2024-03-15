@@ -47,6 +47,7 @@ class HEX_GAME_GUI():
 
         pygame.display.flip()
 
+
     def run(self):
         clock = pygame.time.Clock()
         running = True

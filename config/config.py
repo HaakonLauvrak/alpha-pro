@@ -1,5 +1,5 @@
 #The size (k) of the k x k Hex board, where 3 ≤ k ≤ 10.
-board_size = 3
+board_size = 4
 
 #The number of initial stones N in nim and the number of stones that can be removed each turn K
 nim_N = 9

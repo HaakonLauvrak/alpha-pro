@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class HEX_BOARD():
     
     def __init__(self, board_size) -> None:
@@ -26,6 +29,12 @@ class HEX_BOARD():
 
     def __str__(self) -> str:
         return str([cell.state for cell in self.cells])
+    
+    def get_cells_as_list(self, player):
+        list_format = [cell.state for cell in self.cells] + [player]
+        list_format = np.array(list_format)
+        list_format = np.expand_dims(list_format, axis=0)
+        return list_format
 
 class HEX_CELL():
     
