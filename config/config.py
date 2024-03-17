@@ -11,7 +11,7 @@ num_search_games = 100
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
-learning_rate = 0.01
+learning_rate = 0.1
 num_hidden_layers = 2
 layers = [board_size for _ in range(num_hidden_layers)]
 activation = "relu"

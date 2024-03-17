@@ -2,6 +2,8 @@ from asyncio import sleep
 import copy
 import threading
 import time
+
+import pygame
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
 from gui.hex_board import HEX_BOARD
 from gui.hex_game_gui import HEX_GAME_GUI
@@ -12,8 +14,14 @@ import config.config as config
 from actor.anet import ANET
 
 def start_gui(game_gui):
-    game_gui.run()
-
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        game_gui.drawBoard()
+        pygame.time.delay(100)  # Delay to limit the number of redraws per second
+    pygame.quit()
 if __name__ == "__main__":
 
     ### NIM GAME TEST ###
@@ -71,23 +79,26 @@ if __name__ == "__main__":
 
     game_gui = HEX_GAME_GUI()
     sm = HEX_STATE_MANAGER(game_gui)
-    board = HEX_BOARD(config.board_size)
-    state = [board, 1]
-    game_gui.updateBoard(state[0])
     anet = ANET()
+    state = [HEX_BOARD(config.board_size), 1]
+    game_gui.updateBoard(state[0])
     mcts = MonteCarloTreeSearch(state, anet, sm)
     gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
     gui_thread.start()
-    for i in range(3):
+    acc = []
+    for i in range(2):
+        print(i)
         while not sm.isGameOver(state):
             mcts.search()
             bestAction = mcts.best_action()
-            print(bestAction)
             sm.makeMove(bestAction, state)
             mcts.update_root(bestAction)
-            print(state)
         training_data = mcts.extract_training_data()
         print(training_data)
-        print(anet.train_model(training_data))
-        print("Game Over")
-
+        acc.append(anet.train_model(training_data))
+        state = [HEX_BOARD(config.board_size), 1]
+        game_gui.updateBoard(state[0])
+        sm.setState(state)
+        mcts = MonteCarloTreeSearch(state, anet, sm)
+    print(acc)
+    print("Done")

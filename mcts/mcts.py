@@ -124,7 +124,7 @@ class MonteCarloTreeSearch:
         return 0.2*np.sqrt(math.log((s.visits) / (1 + a.visits)))
 
     def search(self):
-        for _ in range(100):
+        for _ in range(1000):
             node = self.select_node()
             self.expand_node(node)
             self.rollout(node)
@@ -141,7 +141,7 @@ class MonteCarloTreeSearch:
             raise ValueError("Invalid move")
 
     def extract_training_data(self):
-        training_data = {"x_train": np.array([]), "y_train": np.array([])}
+        training_data = {"x_train": [], "y_train": []}
         node_queue = [self.original_root]
         # Traverse the tree
         while len(node_queue) > 0:
@@ -156,12 +156,11 @@ class MonteCarloTreeSearch:
                         node_queue.append(child)
                 visits_list = np.array(list(visits.values()))
                 sum_visits = sum(visits_list)
-                if sum_visits > 0:
+                if (sum_visits > 0):
                     visits_list = [x / sum_visits for x in visits_list]
-                    print(visits_list)
-                    exit()
-                    training_data["x_train"] = np.append(training_data["x_train"],
-                                                        node.state[0].get_cells_as_list(node.state[1])[0])
-                    training_data["y_train"] = np.append(
-                        training_data["y_train"], visits_list)
+                    training_data["x_train"].append(node.state[0].get_cells_as_list(node.state[1])[0])
+                    training_data["y_train"].append(visits_list)
+                    
+        training_data["x_train"] = np.array(training_data["x_train"])
+        training_data["y_train"] = np.array(training_data["y_train"])
         return training_data
