@@ -1,7 +1,9 @@
+import copy
 import math
 import random
 import numpy as np
 from anytree import Node, RenderTree
+import tensorflow as tf
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
 import config.config as config
 
@@ -19,20 +21,14 @@ class MCTSNode(Node):
         self.anet_probabilities = []
 
 
+
 class MonteCarloTreeSearch:
     def __init__(self, root_state, actor_network, state_manager):
         self.root = MCTSNode(root_state)
-        self.original_root = self.root
+        self.original_root = copy.deepcopy(self.root)
         self.actor_network = actor_network
         self.state_manager = state_manager
-        self.all_moves = self.find_all_moves()
-
-    def find_all_moves(self):
-        all_moves = []
-        for i in range(config.board_size):
-            for j in range(config.board_size):
-                all_moves.append((i, j))
-        return all_moves
+        self.all_moves = self.state_manager.find_all_moves()
 
     def select_node(self) -> MCTSNode:
         node = self.root
@@ -51,29 +47,20 @@ class MonteCarloTreeSearch:
     def rollout(self, node):
         # Simulate a game from the current state
         current_state = node.state
-        # while not self.state_manager.isGameOver(current_state):
         while not self.state_manager.isGameOver(current_state):
-            legal_moves = self.state_manager.getLegalMoves(current_state)
-            # legal_moves_list = []
-            # for i in range(config.board_size):
-            #     for j in range(config.board_size):
-            #         if (i, j) in legal_moves:
-            #             legal_moves_list.append(1)
-            #         else:
-            #             legal_moves_list.append(0)
+            legal_moves_list = self.state_manager.getLegalMovesList(current_state)
+            probabilites = self.actor_network.compute_move_probabilities(current_state)[0]
 
-            # probabilites = self.actor_network.compute_move_probabilities(current_state)[
-            #     0]
-            # node.anet_probabilities = probabilites
-            # probabilites_normalized = [
-            #     probabilites[i] if legal_moves_list[i] == 1 else 0 for i in range(len(legal_moves_list))]
-            # if sum(probabilites_normalized) == 0:
-            #     move = random.choice(legal_moves)
-            # else:
-            #     probabilites_normalized = [
-            #     x / sum(probabilites_normalized) for x in probabilites_normalized]
-            #     move = random.choices(population = self.all_moves, weights = probabilites_normalized)[0]
-            move = random.choice(legal_moves)
+            node.anet_probabilities = probabilites
+            probabilites_normalized = [
+                probabilites[i] if legal_moves_list[i] == 1 else 0 for i in range(len(legal_moves_list))]
+            if sum(probabilites_normalized) == 0:
+                move = random.choice(legal_moves_list)
+            else:
+                probabilites_normalized = [
+                x / sum(probabilites_normalized) for x in probabilites_normalized]
+                move = random.choices(population = self.all_moves, weights = probabilites_normalized)[0]
+            # move = random.choice(legal_moves)
             current_state = self.state_manager.simulateMove(
                 move, current_state)
         self.backpropagate(node, self.state_manager.getReward(current_state))
@@ -83,10 +70,10 @@ class MonteCarloTreeSearch:
         while node:
             if reward == 1:
                 node.win_score_1 += 1
-            elif reward == -1:
-                node.win_score_2 += 1
             else:
-                node.draw += 1
+                node.win_score_2 += 1
+            if node is self.root:
+                break
             node = node.parent
 
     def best_action(self):
@@ -124,25 +111,34 @@ class MonteCarloTreeSearch:
         return 0.2*np.sqrt(math.log((s.visits) / (1 + a.visits)))
 
     def search(self):
-        for _ in range(1000):
+        for _ in range(100):
             node = self.select_node()
             self.expand_node(node)
             self.rollout(node)
         return self.best_action()
 
     def update_root(self, move):
+        move_found = False
         for child in self.root.children:
             if child.action == move:
                 self.root = child
-                self.root.parent = None
                 move_found = True
                 break
         if not move_found:
             raise ValueError("Invalid move")
 
     def extract_training_data(self):
+        #Print the tree from the original root
         training_data = {"x_train": [], "y_train": []}
-        node_queue = [self.original_root]
+        while self.root.parent:
+            print("HER")
+            self.root = self.root.parent
+            print(self.root.state[0].get_ann_input())
+        
+        print(self.root.visits)
+        for child in self.root.children:
+            print(child.visits)
+        node_queue = [self.root]
         # Traverse the tree
         while len(node_queue) > 0:
             node = node_queue.pop(0)
@@ -158,7 +154,10 @@ class MonteCarloTreeSearch:
                 sum_visits = sum(visits_list)
                 if (sum_visits > 0):
                     visits_list = [x / sum_visits for x in visits_list]
-                    training_data["x_train"].append(node.state[0].get_cells_as_list(node.state[1])[0])
+                    x_train = node.state[0].get_ann_input()
+                    x_train.append(node.state[1])
+                    x_train = np.array(x_train).flatten() 
+                    training_data["x_train"].append(x_train)
                     training_data["y_train"].append(visits_list)
                     
         training_data["x_train"] = np.array(training_data["x_train"])

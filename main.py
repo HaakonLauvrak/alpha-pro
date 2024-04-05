@@ -8,6 +8,7 @@ from game_logic.nim_state_manager import NIM_STATE_MANAGER
 from gui.hex_board import HEX_BOARD
 from gui.hex_game_gui import HEX_GAME_GUI
 from game_logic.hex_state_manager import HEX_STATE_MANAGER
+from gui.nim_board import NIM_BOARD
 from mcts.mcts import MCTSNode, MonteCarloTreeSearch
 from anytree import Node, RenderTree
 import config.config as config
@@ -24,11 +25,13 @@ def start_gui(game_gui):
     pygame.quit()
 if __name__ == "__main__":
 
-    ### NIM GAME TEST ###
+    # NIM GAME TEST ###
     # dict = {}
     # for i in range(100):
-    #     sm = NIM_STATE_MANAGER(1)
-    #     mcts = MonteCarloTreeSearch(sm.getState(), None, sm)
+    #     state = [[config.nim_N], 1]
+    #     sm = NIM_STATE_MANAGER()
+    #     ann = ANET()
+    #     mcts = MonteCarloTreeSearch(state, ann, sm)
     #     mcts.search()
     #     bestAction = mcts.best_action()
     #     if bestAction in dict:
@@ -77,27 +80,62 @@ if __name__ == "__main__":
     # sm.makeMove((2, 0))
     # print(sm.isGameOver(sm.getState()))
 
-    game_gui = HEX_GAME_GUI()
-    sm = HEX_STATE_MANAGER(game_gui)
+
+    ## HEX GAME MCTS WITH ANN TEST ###
+
+    # game_gui = HEX_GAME_GUI()
+    # sm = HEX_STATE_MANAGER(game_gui)
+    # anet = ANET()
+    # state = [HEX_BOARD(config.board_size), 1]
+    # game_gui.updateBoard(state[0])
+    # mcts = MonteCarloTreeSearch(state, anet, sm)
+    # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    # gui_thread.start()
+    # acc = []
+    # for i in range(2):
+    #     print(i)
+    #     while not sm.isGameOver(state):
+    #         mcts.search()
+    #         bestAction = mcts.best_action()
+    #         sm.makeMove(bestAction, state)
+    #         mcts.update_root(bestAction)
+    #     training_data = mcts.extract_training_data()
+    #     acc.append(anet.train_model(training_data))
+    #     state = [HEX_BOARD(config.board_size), 1]
+    #     game_gui.updateBoard(state[0])
+    #     sm.setState(state)
+    #     mcts = MonteCarloTreeSearch(state, anet, sm)
+    # print(acc)
+    # print("Done")
+
+    # NIM GAME MCTS WITH ANN TEST ###
+
+    sm = NIM_STATE_MANAGER()
     anet = ANET()
-    state = [HEX_BOARD(config.board_size), 1]
-    game_gui.updateBoard(state[0])
+    board = NIM_BOARD()
+    board.set_state(config.nim_N)
+    state = [board, 1]
     mcts = MonteCarloTreeSearch(state, anet, sm)
-    gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    gui_thread.start()
     acc = []
-    for i in range(2):
+    for i in range(3):
         print(i)
         while not sm.isGameOver(state):
             mcts.search()
             bestAction = mcts.best_action()
+            print("----------------------------------")
+            print("State: ", state[0].get_state())
+            print("Best action: ", bestAction)
+            print("----------------------------------")
             sm.makeMove(bestAction, state)
             mcts.update_root(bestAction)
         training_data = mcts.extract_training_data()
+        print("----------------------------------")
         print(training_data)
+        print("----------------------------------")
         acc.append(anet.train_model(training_data))
-        state = [HEX_BOARD(config.board_size), 1]
-        game_gui.updateBoard(state[0])
+        board = NIM_BOARD()
+        board.set_state(config.nim_N)
+        state = [board, 1]
         sm.setState(state)
         mcts = MonteCarloTreeSearch(state, anet, sm)
     print(acc)
