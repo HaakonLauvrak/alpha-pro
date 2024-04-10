@@ -1,16 +1,19 @@
 import copy
 import math
+import pprint
 import random
 import numpy as np
 from anytree import Node, RenderTree
+from anytree.exporter import DictExporter
 import tensorflow as tf
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
 import config.config as config
+import time
 
 
 class MCTSNode(Node):
     def __init__(self, state, parent=None, action=None):
-        name = str(state)
+        name = str(state[0])
         super().__init__(name, parent=parent)
         self.state = state
         self.action = action
@@ -18,14 +21,10 @@ class MCTSNode(Node):
         self.win_score_2 = 0
         self.draw = 0
         self.visits = 0
-        self.anet_probabilities = []
-
-
 
 class MonteCarloTreeSearch:
     def __init__(self, root_state, actor_network, state_manager):
-        self.root = MCTSNode(root_state)
-        self.original_root = copy.deepcopy(self.root)
+        self.root = MCTSNode(copy.deepcopy(root_state))
         self.actor_network = actor_network
         self.state_manager = state_manager
         self.all_moves = self.state_manager.find_all_moves()
@@ -51,7 +50,6 @@ class MonteCarloTreeSearch:
             legal_moves_list = self.state_manager.getLegalMovesList(current_state)
             probabilites = self.actor_network.compute_move_probabilities(current_state)[0]
 
-            node.anet_probabilities = probabilites
             probabilites_normalized = [
                 probabilites[i] if legal_moves_list[i] == 1 else 0 for i in range(len(legal_moves_list))]
             if sum(probabilites_normalized) == 0:
@@ -60,7 +58,6 @@ class MonteCarloTreeSearch:
                 probabilites_normalized = [
                 x / sum(probabilites_normalized) for x in probabilites_normalized]
                 move = random.choices(population = self.all_moves, weights = probabilites_normalized)[0]
-            # move = random.choice(legal_moves)
             current_state = self.state_manager.simulateMove(
                 move, current_state)
         self.backpropagate(node, self.state_manager.getReward(current_state))
@@ -108,10 +105,14 @@ class MonteCarloTreeSearch:
     @staticmethod
     def u(s, a):
         # Return the UCT exploration value for a given state and action
-        return 0.2*np.sqrt(math.log((s.visits) / (1 + a.visits)))
+        return 0.8*np.sqrt(math.log((s.visits) / (1 + a.visits)))
 
     def search(self):
-        for _ in range(100):
+        time_limit = config.time_limit
+        start_time = time.time()
+        for _ in range(config.num_search_games):
+            if time.time() - start_time > time_limit:
+                break
             node = self.select_node()
             self.expand_node(node)
             self.rollout(node)
@@ -125,19 +126,12 @@ class MonteCarloTreeSearch:
                 move_found = True
                 break
         if not move_found:
-            raise ValueError("Invalid move")
+            raise ValueError(f"Invalid move: {move}")
 
     def extract_training_data(self):
-        #Print the tree from the original root
-        training_data = {"x_train": [], "y_train": []}
         while self.root.parent:
-            print("HER")
             self.root = self.root.parent
-            print(self.root.state[0].get_ann_input())
-        
-        print(self.root.visits)
-        for child in self.root.children:
-            print(child.visits)
+        training_data = {"x_train": [], "y_train": []}
         node_queue = [self.root]
         # Traverse the tree
         while len(node_queue) > 0:
@@ -162,4 +156,5 @@ class MonteCarloTreeSearch:
                     
         training_data["x_train"] = np.array(training_data["x_train"])
         training_data["y_train"] = np.array(training_data["y_train"])
-        return training_data
+        return training_data 
+    
