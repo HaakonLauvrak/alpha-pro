@@ -36,5 +36,8 @@ class ANET:
         """
         return self.model.predict([state[0].get_cells_as_list(state[1])], verbose=False)
 
-    
-    
+    def save_model(self):
+        self.model.save(f"{config.game}_{config.num_episodes}episodes_{config.num_search_games}searchgames.h5")
+
+    def load_model(self, game, num_episodes, num_search_games):
+        self.model = keras.models.load_model(f"{game}_{num_episodes}episodes_{num_search_games}searchgames.h5")

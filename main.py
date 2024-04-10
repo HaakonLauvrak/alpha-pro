@@ -83,10 +83,10 @@ if __name__ == "__main__":
     state = [HEX_BOARD(config.board_size), 1]
     game_gui.updateBoard(state[0])
     mcts = MonteCarloTreeSearch(state, anet, sm)
-    gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    gui_thread.start()
+    # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    # gui_thread.start()
     acc = []
-    for i in range(2):
+    for i in range(1):
         print(i)
         while not sm.isGameOver(state):
             mcts.search()
@@ -102,3 +102,4 @@ if __name__ == "__main__":
         mcts = MonteCarloTreeSearch(state, anet, sm)
     print(acc)
     print("Done")
+    anet.save_model()
