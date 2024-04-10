@@ -1,7 +1,7 @@
 import numpy as np
+from gui.board import BOARD
 
-
-class HEX_BOARD():
+class HEX_BOARD(BOARD):
     
     def __init__(self, board_size) -> None:
         self.cells = []
@@ -30,11 +30,14 @@ class HEX_BOARD():
     def __str__(self) -> str:
         return str([cell.state for cell in self.cells])
     
-    def get_cells_as_list(self, player):
+    def get_state(self, player):
         list_format = [cell.state for cell in self.cells] + [player]
         list_format = np.array(list_format)
         list_format = np.expand_dims(list_format, axis=0)
         return list_format
+    
+    def get_ann_input(self):
+        return [cell.state for cell in self.cells]
 
 class HEX_CELL():
     

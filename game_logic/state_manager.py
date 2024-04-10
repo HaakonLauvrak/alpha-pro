@@ -21,3 +21,9 @@ class STATE_MANAGER(ABC):
     @abstractmethod
     def isGameOver(self):
         pass
+
+    @abstractmethod
+    def find_all_moves(self):
+        pass
+
+    

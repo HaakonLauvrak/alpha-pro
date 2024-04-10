@@ -67,5 +67,17 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
        
     def getReward(self, state):
         return -state[1]
+    
+    def find_all_moves(self):
+        all_moves = []
+        for i in range(config.board_size):
+            for j in range(config.board_size):
+                all_moves.append((i, j))
+        return all_moves
+    
+    def getLegalMovesList(self, state):
+        legal_moves = self.getLegalMoves(state)
+        legal_moves_list = [1 if (i, j) in legal_moves else 0 for i in range(config.board_size) for j in range(config.board_size)]
+        return legal_moves_list
 
 
