@@ -48,7 +48,7 @@ class ANET:
         return self.model.predict(ann_input, verbose=False)
 
     def save_model(self):
-        self.model.save(f"{config.game}_{config.num_episodes}episodes_{config.num_search_games}searchgames.h5")
+        self.model.save(f"actor/weights/{config.game}_{config.num_episodes}episodes_{config.num_search_games}searchgames.keras")
 
     def load_model(self, game, num_episodes, num_search_games):
-        self.model = keras.models.load_model(f"{game}_{num_episodes}episodes_{num_search_games}searchgames.h5")
+        self.model = keras.models.load_model(f"actor/weights/{game}_{num_episodes}ep_{num_search_games}searches.keras")
