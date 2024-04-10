@@ -13,6 +13,7 @@ from mcts.mcts import MCTSNode, MonteCarloTreeSearch
 from anytree import Node, RenderTree
 import config.config as config
 from actor.anet import ANET
+from tournament.tournament import Tournament
 
 def start_gui(game_gui):
     running = True
@@ -86,28 +87,82 @@ if __name__ == "__main__":
 
     ## HEX GAME MCTS WITH ANN TEST ###
 
-    game_gui = HEX_GAME_GUI()
-    sm = HEX_STATE_MANAGER(game_gui)
-    anet = ANET()
-    state = [HEX_BOARD(config.board_size), 1]
-    game_gui.updateBoard(state[0])
-    mcts = MonteCarloTreeSearch(state, anet, sm)
+    # game_gui = HEX_GAME_GUI()
+    # sm = HEX_STATE_MANAGER(game_gui)
+    # anet = ANET()
+    # state = [HEX_BOARD(config.board_size), 1]
+    # game_gui.updateBoard(state[0])
+    # mcts = MonteCarloTreeSearch(state, anet, sm)
     # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
     # gui_thread.start()
-    acc = []
-    for i in range(1):
-        print(i)
-        while not sm.isGameOver(state):
-            mcts.search()
-            bestAction = mcts.best_action()
-            sm.makeMove(bestAction, state)
-            mcts.update_root(bestAction)
-        training_data = mcts.extract_training_data()
-        acc.append(anet.train_model(training_data))
-        state = [HEX_BOARD(config.board_size), 1]
-        game_gui.updateBoard(state[0])
-        sm.setState(state)
-        mcts = MonteCarloTreeSearch(state, anet, sm)
-    print(acc)
-    print("Done")
-    anet.save_model()
+    # acc = []
+    # for i in range(5):
+    #     print(i)
+    #     while not sm.isGameOver(state):
+    #         mcts.search()
+    #         bestAction = mcts.best_action()
+    #         sm.makeMove(bestAction, state)
+    #         mcts.update_root(bestAction)
+    #     training_data = mcts.extract_training_data()
+    #     acc.append(anet.train_model(training_data))
+    #     state = [HEX_BOARD(config.board_size), 1]
+    #     game_gui.updateBoard(state[0])
+    #     sm.setState(state)
+    #     mcts = MonteCarloTreeSearch(state, anet, sm)
+    # print(acc)
+    # print("Done")
+
+    # # NIM GAME MCTS WITH ANN TEST ###
+
+    # sm = NIM_STATE_MANAGER()
+    # anet = ANET()
+    # board = NIM_BOARD()
+    # board.set_state(config.nim_N)
+    # state = [board, 1]
+    # mcts = MonteCarloTreeSearch(state, anet, sm)
+    # acc = []
+    # for i in range(10):
+    #     print(i)
+    #     while not sm.isGameOver(state):
+    #         mcts.search()
+    #         bestAction = mcts.best_action()
+    #         print("----------------------------------")
+    #         print("State: ", state[0].get_state())
+    #         print("Best action: ", bestAction)
+    #         print("----------------------------------")
+    #         sm.makeMove(bestAction, state)
+    #         mcts.update_root(bestAction)
+    #     training_data = mcts.extract_training_data()
+    #     print("----------------------------------")
+    #     print(training_data)
+    #     print("----------------------------------")
+    #     acc.append(anet.train_model(training_data))
+    #     board = NIM_BOARD()
+    #     board.set_state(config.nim_N)
+    #     state = [board, 1]
+    #     sm.setState(state)
+    #     mcts = MonteCarloTreeSearch(state, anet, sm)
+    #     if i == 9:
+    #         for i in range(8):
+    #             x_train = training_data["x_train"]
+    #             y_train = training_data["y_train"]
+    #             boardgnur = NIM_BOARD()
+    #             boardgnur.set_state(x_train[i][0])
+    #             stategnur = [boardgnur, x_train[i][1]]
+    #             move_prob = anet.compute_move_probabilities(stategnur)
+    #             print(move_prob)
+    #             print(y_train[i])
+    #             print("----------------------------------")
+    # print(acc)
+    # print("Done")
+
+    ## HEX TURNAMENT TEST ##
+    it1 = ANET()
+    it2 = ANET()
+    players = [it1, it2]
+    gui = HEX_GAME_GUI()
+    sm = HEX_STATE_MANAGER(gui)
+    tournament = Tournament(players, sm, 20, "hex")
+    results = tournament.play_tournament()
+    for dict in results:
+        print(dict)
