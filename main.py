@@ -13,6 +13,7 @@ from mcts.mcts import MCTSNode, MonteCarloTreeSearch
 from anytree import Node, RenderTree
 import config.config as config
 from actor.anet import ANET
+from tournament.tournament import Tournament
 
 def start_gui(game_gui):
     running = True
@@ -86,30 +87,30 @@ if __name__ == "__main__":
 
     ## HEX GAME MCTS WITH ANN TEST ###
 
-    game_gui = HEX_GAME_GUI()
-    sm = HEX_STATE_MANAGER(game_gui)
-    anet = ANET()
-    state = [HEX_BOARD(config.board_size), 1]
-    game_gui.updateBoard(state[0])
-    mcts = MonteCarloTreeSearch(state, anet, sm)
-    gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    gui_thread.start()
-    acc = []
-    for i in range(5):
-        print(i)
-        while not sm.isGameOver(state):
-            mcts.search()
-            bestAction = mcts.best_action()
-            sm.makeMove(bestAction, state)
-            mcts.update_root(bestAction)
-        training_data = mcts.extract_training_data()
-        acc.append(anet.train_model(training_data))
-        state = [HEX_BOARD(config.board_size), 1]
-        game_gui.updateBoard(state[0])
-        sm.setState(state)
-        mcts = MonteCarloTreeSearch(state, anet, sm)
-    print(acc)
-    print("Done")
+    # game_gui = HEX_GAME_GUI()
+    # sm = HEX_STATE_MANAGER(game_gui)
+    # anet = ANET()
+    # state = [HEX_BOARD(config.board_size), 1]
+    # game_gui.updateBoard(state[0])
+    # mcts = MonteCarloTreeSearch(state, anet, sm)
+    # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    # gui_thread.start()
+    # acc = []
+    # for i in range(5):
+    #     print(i)
+    #     while not sm.isGameOver(state):
+    #         mcts.search()
+    #         bestAction = mcts.best_action()
+    #         sm.makeMove(bestAction, state)
+    #         mcts.update_root(bestAction)
+    #     training_data = mcts.extract_training_data()
+    #     acc.append(anet.train_model(training_data))
+    #     state = [HEX_BOARD(config.board_size), 1]
+    #     game_gui.updateBoard(state[0])
+    #     sm.setState(state)
+    #     mcts = MonteCarloTreeSearch(state, anet, sm)
+    # print(acc)
+    # print("Done")
 
     # # NIM GAME MCTS WITH ANN TEST ###
 
@@ -154,3 +155,14 @@ if __name__ == "__main__":
     #             print("----------------------------------")
     # print(acc)
     # print("Done")
+
+    ## HEX TURNAMENT TEST ##
+    it1 = ANET()
+    it2 = ANET()
+    players = [it1, it2]
+    gui = HEX_GAME_GUI()
+    sm = HEX_STATE_MANAGER(gui)
+    tournament = Tournament(players, sm, 20, "hex")
+    results = tournament.play_tournament()
+    for dict in results:
+        print(dict)
