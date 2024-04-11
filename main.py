@@ -47,23 +47,21 @@ if __name__ == "__main__":
     ### HEX GAME TEST ###
 
     # dict = {}
-    # for i in range(100):
+    # for i in range(1):
+    #     print(i+1)
     #     game_gui = HEX_GAME_GUI()
-    #     sim_gui = HEX_GAME_GUI()
-    #     sm = HEX_STATE_MANAGER(1, game_gui)
-    #     sim_sm = HEX_STATE_MANAGER(1, sim_gui)
-    #     game_gui.updateBoard(sm.getState()[0])
-    #     # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    #     # gui_thread.start()
-    #     sm.makeMove((0, 0))
-    #     sm.makeMove((2, 2))
-    #     sm.makeMove((2, 0))
-    #     sm.makeMove((1, 0))
-    #     mcts = MonteCarloTreeSearch(sm.getState(), None, sim_sm)
-    #     game_gui.updateBoard(sm.getState()[0])
-    #     mcts.search()
-    #     game_gui.updateBoard(sm.getState()[0])
-    #     bestAction = mcts.best_action()
+    #     sm = HEX_STATE_MANAGER(game_gui)
+    #     anet = ANET("training_net")
+    #     state = [HEX_BOARD(config.board_size), 1]
+    #     gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    #     gui_thread.start()
+    #     sm.makeMove((0, 0), state)
+    #     sm.makeMove((1, 2), state)
+    #     sm.makeMove((1, 0), state)
+    #     sm.makeMove((2, 2), state)
+    #     sm.makeMove((2, 0), state)
+    #     mcts = MonteCarloTreeSearch(state, anet, sm)
+    #     bestAction = mcts.search()
     #     if bestAction in dict:
     #         dict[bestAction] += 1
     #     else:
@@ -72,17 +70,21 @@ if __name__ == "__main__":
 
     ## HEX GAME GUI TEST ###
     # game_gui = HEX_GAME_GUI()
-    # sm = HEX_STATE_MANAGER(1, game_gui)
-    # game_gui.updateBoard(sm.getState()[0])
+    # sm = HEX_STATE_MANAGER(game_gui)
+    # anet = ANET("training_net")
+    # state = [HEX_BOARD(config.board_size), 1]
     # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    # game_gui.updateBoard(state[0])
     # gui_thread.start()
-    # sm.makeMove((0, 0))
-    # sm.makeMove((1, 2))
-    # sm.makeMove((1, 0))
-    # sm.makeMove((2, 2))
-    # print(sm.isGameOver(sm.getState()))
-    # sm.makeMove((2, 0))
-    # print(sm.isGameOver(sm.getState()))
+    # sm.makeMove((0, 0), state)
+    # sm.makeMove((1, 2), state)
+    # sm.makeMove((1, 0), state)
+    # sm.makeMove((2, 2), state)
+    # sm.makeMove((2, 0), state)
+    # mcts = MonteCarloTreeSearch(state, anet, sm)
+    # mcts.search()
+    # bestAction = mcts.best_action()
+    
 
 
     # HEX GAME MCTS WITH ANN TEST ###
@@ -96,24 +98,21 @@ if __name__ == "__main__":
     gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
     gui_thread.start()
     acc = []
-    for i in range(5):
+    for i in range(3):
         print(i)
-        print("Game start")
-        print(state[0].get_state(state[1]))
         while not sm.isGameOver(state):
             mcts.search()
             bestAction = mcts.best_action()
+            print(bestAction)
             sm.makeMove(bestAction, state)
             mcts.update_root(bestAction)
-        print("Game over")
-        print(state[0].get_state(state[1]))
         training_data = mcts.extract_training_data()
         acc.append(anet.train_model(training_data))
         state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
         game_gui.updateBoard(state[0])
         sm.setState(state)
         mcts = MonteCarloTreeSearch(state, anet, sm)
-        if i == 4 or i == 9 or i == 14 or i == 19: 
+        if (i + 1) % 10 == 0: 
             anet.save_model(i + 1)
 
     print(acc)
@@ -122,44 +121,33 @@ if __name__ == "__main__":
     # # NIM GAME MCTS WITH ANN TEST ###
 
     # sm = NIM_STATE_MANAGER()
-    # anet = ANET()
+    # anet = ANET("nimminimminim")
     # board = NIM_BOARD()
     # board.set_state(config.nim_N)
     # state = [board, 1]
     # mcts = MonteCarloTreeSearch(state, anet, sm)
     # acc = []
-    # for i in range(10):
+    # for i in range(100):
     #     print(i)
     #     while not sm.isGameOver(state):
     #         mcts.search()
     #         bestAction = mcts.best_action()
-    #         print("----------------------------------")
-    #         print("State: ", state[0].get_state())
-    #         print("Best action: ", bestAction)
-    #         print("----------------------------------")
+    #         # print("----------------------------------")
+    #         # print("State: ", state[0].get_state())
+    #         # print("Best action: ", bestAction)
+    #         # print("----------------------------------")
     #         sm.makeMove(bestAction, state)
     #         mcts.update_root(bestAction)
     #     training_data = mcts.extract_training_data()
-    #     print("----------------------------------")
-    #     print(training_data)
-    #     print("----------------------------------")
+    #     # print("----------------------------------")
+    #     # print(training_data)
+    #     # print("----------------------------------")
     #     acc.append(anet.train_model(training_data))
     #     board = NIM_BOARD()
     #     board.set_state(config.nim_N)
     #     state = [board, 1]
     #     sm.setState(state)
     #     mcts = MonteCarloTreeSearch(state, anet, sm)
-    #     if i == 9:
-    #         for i in range(8):
-    #             x_train = training_data["x_train"]
-    #             y_train = training_data["y_train"]
-    #             boardgnur = NIM_BOARD()
-    #             boardgnur.set_state(x_train[i][0])
-    #             stategnur = [boardgnur, x_train[i][1]]
-    #             move_prob = anet.compute_move_probabilities(stategnur)
-    #             print(move_prob)
-    #             print(y_train[i])
-    #             print("----------------------------------")
     # print(acc)
     # print("Done")
 
@@ -169,9 +157,9 @@ if __name__ == "__main__":
     # anet3 = ANET("Player3")
     # anet4 = ANET("Player4")
 
-    # it1_model = anet1.load_model("hex", 5, 1000)
+    # it1_model = anet1.load_model("hex", 1, 1000)
     # anet1.set_model(it1_model)
-    # it2_model = anet2.load_model("hex", 10, 1000)
+    # it2_model = anet2.load_model("hex", 11, 1000)
     # anet2.set_model(it2_model)
     # it3__model = anet4.load_model("hex", 15, 1000)
     # anet3.set_model(it3__model)

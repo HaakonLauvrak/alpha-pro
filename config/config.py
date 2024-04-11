@@ -15,12 +15,14 @@ time_limit = 5
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
-learning_rate = 0.01
-dimensions = [256, 128, 64]
+learning_rate = 0.2
+dimensions = [16, 16, 16, 16, 16] #hex
+# dimensions = [64, 32, 16, 8] #nim
 activation = "relu"
 
 #The optimizer in the ANET, with (at least) the following options all available: 
-#Adagrad, Stochastic Gradient Descent (SGD), RMSProp, and Adam.
+#Adagrad, Stochastic Gradient Descent
+#  (SGD), RMSProp, and Adam.
 optimizer = "adam"
 
 #The number (M) of ANETs to be cached in preparation for a TOPP. These should be cached, starting with an untrained net prior to episode 1, at a fixed interval throughout the training episodes.

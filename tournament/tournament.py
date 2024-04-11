@@ -36,7 +36,7 @@ class Tournament():
             all_moves = self.state_manager.find_all_moves()
             while not self.state_manager.isGameOver(current_state):
                 if current_state[1] == 1:
-                    probabilities = player1.compute_move_probabilities(current_state)[0]
+                    probabilities = player1.compute_move_probabilities(current_state[0].get_ann_input(current_state[1]))[0]
                     if sum(probabilities) == 0:
                         move = random.choice(self.state_manager.getLegalMoves(current_state))
                     else:
@@ -45,7 +45,7 @@ class Tournament():
                         probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
                         move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
                 else:
-                    probabilities = player2.compute_move_probabilities(current_state)[0]
+                    probabilities = player2.compute_move_probabilities(current_state[0].get_ann_input(current_state[1]))[0]
                     if sum(probabilities) == 0:
                         move = random.choice(self.state_manager.getLegalMoves(current_state))
                     else:

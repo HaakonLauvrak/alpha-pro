@@ -1,5 +1,6 @@
 import numpy as np
 from gui.board import BOARD
+import config.config as config
 
 class HEX_BOARD(BOARD):
     
@@ -36,9 +37,14 @@ class HEX_BOARD(BOARD):
         list_format = np.expand_dims(list_format, axis=0)
         return list_format
     
-    def get_ann_input(self):
-        return [cell.state for cell in self.cells]
-
+    def get_ann_input(self, player):
+        cell_states = [cell.state for cell in self.cells]
+        ann_input = np.array([np.array([np.array([0, 0]) for i in range(config.board_size)]) for i in range(config.board_size)])
+        for i in range(len(cell_states)):
+            ann_input[(i//config.board_size)] = np.array([cell_states[i], player])
+        ann_input = np.expand_dims(ann_input, axis=0)
+        return ann_input
+    
 class HEX_CELL():
     
     def __init__(self, position, board) -> None:
