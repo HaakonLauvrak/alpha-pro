@@ -53,7 +53,11 @@ class MonteCarloTreeSearch:
             probabilites_normalized = [
                 probabilites[i] if legal_moves_list[i] == 1 else 0 for i in range(len(legal_moves_list))]
             if sum(probabilites_normalized) == 0:
-                move = random.choice(legal_moves_list)
+                possible_moves = []
+                for i in range(len(legal_moves_list)):
+                    if legal_moves_list[i] == 1:
+                        possible_moves.append(self.all_moves[i])
+                move = random.choice(possible_moves)
             else:
                 probabilites_normalized = [
                 x / sum(probabilites_normalized) for x in probabilites_normalized]
@@ -105,7 +109,7 @@ class MonteCarloTreeSearch:
     @staticmethod
     def u(s, a):
         # Return the UCT exploration value for a given state and action
-        return 0.8*np.sqrt(math.log((s.visits) / (1 + a.visits)))
+        return 1 * np.sqrt(math.log((s.visits) / (1 + a.visits)))
 
     def search(self):
         time_limit = config.time_limit
@@ -150,11 +154,12 @@ class MonteCarloTreeSearch:
                     visits_list = [x / sum_visits for x in visits_list]
                     x_train = node.state[0].get_ann_input()
                     x_train.append(node.state[1])
-                    x_train = np.array(x_train).flatten() 
+                    x_train = np.array(x_train).flatten()
                     training_data["x_train"].append(x_train)
                     training_data["y_train"].append(visits_list)
-                    
+
         training_data["x_train"] = np.array(training_data["x_train"])
         training_data["y_train"] = np.array(training_data["y_train"])
-        return training_data 
-    
+        return training_data
+
+

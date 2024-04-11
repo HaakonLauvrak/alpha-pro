@@ -1,8 +1,8 @@
 import copy
+import random
 import numpy as np
 import config.config as config
 from gui.hex_board import HEX_BOARD
-
 
 class Tournament():
 
@@ -18,6 +18,7 @@ class Tournament():
             for player2 in self.players:
                 if player1 == player2:
                     continue
+                print("Playing: " + player1.name + " vs " + player2.name)
                 results.append(self.play(player1, player2))
         return results
     
@@ -28,32 +29,36 @@ class Tournament():
         
 
     def play(self, player1, player2):
-        results = {player1: 0, player2: 0}
+        results = {player1.name: 0, player2.name: 0}
         for i in range(self.rounds):
+            print("Round: " + str(i + 1))
             current_state = self.make_new_game()
             all_moves = self.state_manager.find_all_moves()
             while not self.state_manager.isGameOver(current_state):
                 if current_state[1] == 1:
-                    move_probabilities = player1.compute_move_probabilities(current_state)[0]
-                    legal_moves = self.state_manager.getLegalMovesList(current_state)
-                    for i in range(len(legal_moves)):
-                        if legal_moves[i] == 0:
-                            move_probabilities[i] = 0
-                    best_move_index = np.argmax(move_probabilities)
-                    move = all_moves[best_move_index]
+                    probabilities = player1.compute_move_probabilities(current_state)[0]
+                    if sum(probabilities) == 0:
+                        move = random.choice(self.state_manager.getLegalMoves(current_state))
+                    else:
+                        legal_moves = self.state_manager.getLegalMovesList(current_state)
+                        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
+                        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
+                        move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
                 else:
-                    move_probabilities = player2.compute_move_probabilities(current_state)[0]
-                    legal_moves = self.state_manager.getLegalMovesList(current_state)
-                    for i in range(len(legal_moves)):
-                        if legal_moves[i] == 0:
-                            move_probabilities[i] = 0
-                    best_move_index = np.argmax(move_probabilities)
-                    move = all_moves[best_move_index]
+                    probabilities = player2.compute_move_probabilities(current_state)[0]
+                    if sum(probabilities) == 0:
+                        move = random.choice(self.state_manager.getLegalMoves(current_state))
+                    else:
+                        legal_moves = self.state_manager.getLegalMovesList(current_state)
+                        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
+                        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
+                        move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
+                    
                 self.state_manager.makeMove(move, current_state)
             if self.state_manager.getReward(current_state) == -1:
-                results[player1] += 1
+                results[player1.name] += 1
             else:
-                results[player2] += 1
+                results[player2.name] += 1
         return results
         
 
