@@ -97,10 +97,12 @@ if __name__ == "__main__":
     state = [HEX_BOARD(config.board_size), 1]
     game_gui.updateBoard(state[0])
     mcts = MonteCarloTreeSearch(state, anet, sm)
-    gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    gui_thread.start()
+    # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    # gui_thread.start()
     acc = []
-    for i in range(10):
+    loss = []
+    mae = []
+    for i in range(config.num_episodes):
         print(i)
         while not sm.isGameOver(state):
             mcts.search()
@@ -109,7 +111,10 @@ if __name__ == "__main__":
             sm.makeMove(bestAction, state)
             mcts.update_root(bestAction)
         training_data = mcts.extract_training_data()
-        acc.append(anet.train_model(training_data))
+        training_score = (anet.train_model(training_data))
+        acc.append(training_score[0])
+        loss.append(training_score[1])
+        mae.append(training_score[2])
         state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
         game_gui.updateBoard(state[0])
         sm.setState(state)
@@ -119,9 +124,36 @@ if __name__ == "__main__":
 
     print(acc)
     #Plot the accuracy
-    plt.plot(acc)
-    plt.ylabel('Accuracy')
-    plt.xlabel('Epoch')
+    # Create a figure
+    fig = plt.figure()
+
+    # Add subplots
+    # Subplot 1: Accuracy
+    ax1 = fig.add_subplot(311)  # 3 rows, 1 column, plot 1
+    ax1.plot(acc, label='Accuracy')
+    ax1.set_title('Model Accuracy')
+    ax1.set_ylabel('Accuracy')
+    ax1.legend(loc='upper left')
+
+    # Subplot 2: Loss
+    ax2 = fig.add_subplot(312)  # 3 rows, 1 column, plot 2
+    ax2.plot(loss, label='Loss', color='orange')
+    ax2.set_title('Model Loss')
+    ax2.set_ylabel('Loss')
+    ax2.legend(loc='upper left')
+
+    # Subplot 3: MAE
+    ax3 = fig.add_subplot(313)  # 3 rows, 1 column, plot 3
+    ax3.plot(mae, label='Mean Absolute Error', color='green')
+    ax3.set_title('Mean Absolute Error')
+    ax3.set_ylabel('MAE')
+    ax3.set_xlabel('Games')
+    ax3.legend(loc='upper left')
+
+    # Adjust layout to prevent overlap
+    plt.tight_layout()
+
+    # Show the figure
     plt.show()
     
     print("Done")

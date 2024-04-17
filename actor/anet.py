@@ -39,9 +39,13 @@ class ANET:
             ))
             model.add(keras.layers.Flatten())
             for layer in config.dimensions_dense:
+                model.add(keras.layers.Dropout(0.2))
                 model.add(keras.layers.Dense(
                     units=layer, 
-                    activation=config.activation))
+                    activation=config.activation,
+                    kernel_regularizer=keras.regularizers.l2(0.01)
+                ))
+            
             model.add(keras.layers.Dense(
                 units=self.output_shape, 
                 activation="softmax",
@@ -68,10 +72,10 @@ class ANET:
         self.model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=[
                            "accuracy", "mae"])
         history = self.model.fit(data["x_train"], data["y_train"],
-                       epochs=config.epochs, batch_size=config.batch_size, verbose=True)
+                       epochs=config.epochs, batch_size=config.batch_size, verbose=True, shuffle=True)
         train_score = self.model.evaluate(
             data["x_train"], data["y_train"], verbose=0)
-        return train_score[2]
+        return train_score
 
     def compute_move_probabilities(self, ann_input):
         """

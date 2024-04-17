@@ -13,8 +13,8 @@ import time
 
 class MCTSNode(Node):
     def __init__(self, state, parent=None, action=None):
-        name = str(state[0])
-        super().__init__(name, parent=parent)
+        # name = str(state[0])
+        super().__init__(".", parent=parent)
         self.state = state
         self.action = action
         self.win_score_1 = 0
@@ -107,7 +107,7 @@ class MonteCarloTreeSearch:
     @staticmethod
     def u(s, a):
         # Return the UCT exploration value for a given state and action
-        return 0.2 * np.sqrt(math.log((s.visits) / (1 + a.visits)))
+        return config.c * np.sqrt(math.log((s.visits) / (1 + a.visits)))
  
     def search(self):
         time_limit = config.time_limit
