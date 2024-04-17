@@ -23,7 +23,7 @@ class ANET:
             model.add(keras.layers.InputLayer(
                 shape=self.input_shape))
             
-            for layer in config.dimensions:
+            for layer in config.dimensions_conv:
                 model.add(keras.layers.Conv2D(
                     filters=layer,
                     kernel_size=(3,3),
@@ -38,14 +38,10 @@ class ANET:
                 strides = (1,1)
             ))
             model.add(keras.layers.Flatten())
-            model.add(keras.layers.Dense(
-                units=64,
-                activation=config.activation,
-                ))
-            model.add(keras.layers.Dense(
-                units=32,
-                activation=config.activation,
-                ))
+            for layer in config.dimensions_dense:
+                model.add(keras.layers.Dense(
+                    units=layer, 
+                    activation=config.activation))
             model.add(keras.layers.Dense(
                 units=self.output_shape, 
                 activation="softmax",
@@ -72,7 +68,7 @@ class ANET:
         self.model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=[
                            "accuracy", "mae"])
         history = self.model.fit(data["x_train"], data["y_train"],
-                       epochs=50, batch_size=64, verbose=True)
+                       epochs=config.epochs, batch_size=config.batch_size, verbose=True)
         train_score = self.model.evaluate(
             data["x_train"], data["y_train"], verbose=0)
         return train_score[2]
