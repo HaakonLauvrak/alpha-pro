@@ -32,12 +32,10 @@ class MonteCarloTreeSearch:
     def select_node(self) -> MCTSNode:
         node = self.root
         while node.children:
-            node.visits += 1
             node = self.tree_policy(node)
         return node
 
     def expand_node(self, node):
-        node.visits += 1
         legal_moves = self.state_manager.getLegalMoves(node.state)
         for move in legal_moves:
             new_state = self.state_manager.simulateMove(move, node.state)
@@ -68,6 +66,7 @@ class MonteCarloTreeSearch:
     def backpropagate(self, node, reward):
         # Update the nodes in the path to the root with the reward
         while node:
+            node.visits += 1
             if reward == 1:
                 node.win_score_1 += 1
             else:
@@ -109,7 +108,7 @@ class MonteCarloTreeSearch:
     def u(s, a):
         # Return the UCT exploration value for a given state and action
         return 0.2 * np.sqrt(math.log((s.visits) / (1 + a.visits)))
-
+ 
     def search(self):
         time_limit = config.time_limit
         start_time = time.time()
@@ -117,7 +116,8 @@ class MonteCarloTreeSearch:
             if time.time() - start_time > time_limit:
                 break
             node = self.select_node()
-            self.expand_node(node)
+            if not self.state_manager.isGameOver(node.state):  
+                self.expand_node(node)
             self.rollout(node)
         return self.best_action()
 

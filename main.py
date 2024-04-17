@@ -14,6 +14,8 @@ from anytree import Node, RenderTree
 import config.config as config
 from actor.anet import ANET
 from tournament.tournament import Tournament
+import matplotlib.pyplot as plt
+
 
 def start_gui(game_gui):
     running = True
@@ -98,7 +100,7 @@ if __name__ == "__main__":
     gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
     gui_thread.start()
     acc = []
-    for i in range(3):
+    for i in range(10):
         print(i)
         while not sm.isGameOver(state):
             mcts.search()
@@ -112,10 +114,16 @@ if __name__ == "__main__":
         game_gui.updateBoard(state[0])
         sm.setState(state)
         mcts = MonteCarloTreeSearch(state, anet, sm)
-        if (i + 1) % 10 == 0: 
+        if (i + 1) % 5 == 0: 
             anet.save_model(i + 1)
 
     print(acc)
+    #Plot the accuracy
+    plt.plot(acc)
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.show()
+    
     print("Done")
 
     # # NIM GAME MCTS WITH ANN TEST ###
@@ -132,16 +140,16 @@ if __name__ == "__main__":
     #     while not sm.isGameOver(state):
     #         mcts.search()
     #         bestAction = mcts.best_action()
-    #         # print("----------------------------------")
-    #         # print("State: ", state[0].get_state())
-    #         # print("Best action: ", bestAction)
-    #         # print("----------------------------------")
+    #         print("----------------------------------")
+    #         print("State: ", state[0].get_state())
+    #         print("Best action: ", bestAction)
+    #         print("----------------------------------")
     #         sm.makeMove(bestAction, state)
     #         mcts.update_root(bestAction)
     #     training_data = mcts.extract_training_data()
-    #     # print("----------------------------------")
-    #     # print(training_data)
-    #     # print("----------------------------------")
+    #     print("----------------------------------")
+    #     print(training_data)
+    #     print("----------------------------------")
     #     acc.append(anet.train_model(training_data))
     #     board = NIM_BOARD()
     #     board.set_state(config.nim_N)
@@ -151,21 +159,22 @@ if __name__ == "__main__":
     # print(acc)
     # print("Done")
 
-    # # HEX TURNAMENT TEST ##
+    # HEX TURNAMENT TEST ##
+    # anet0 = ANET("Player0")
     # anet1 = ANET("Player1")
     # anet2 = ANET("Player2")
     # anet3 = ANET("Player3")
     # anet4 = ANET("Player4")
 
-    # it1_model = anet1.load_model("hex", 1, 1000)
+    # it1_model = anet1.load_model("hex", 5, 1000)
     # anet1.set_model(it1_model)
-    # it2_model = anet2.load_model("hex", 11, 1000)
+    # it2_model = anet2.load_model("hex", 10, 1000)
     # anet2.set_model(it2_model)
     # it3__model = anet4.load_model("hex", 15, 1000)
     # anet3.set_model(it3__model)
     # it4__model = anet4.load_model("hex", 20, 1000)
     # anet4.set_model(it4__model)
-    # players = [anet1, anet2]
+    # players = [anet0, anet1, anet2]
     # gui = HEX_GAME_GUI()
     # sm = HEX_STATE_MANAGER(gui)
     # tournament = Tournament(players, sm, 20, "hex")

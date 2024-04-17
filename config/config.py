@@ -15,8 +15,8 @@ time_limit = 5
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
-learning_rate = 0.2
-dimensions = [16, 16, 16, 16, 16] #hex
+learning_rate = 0.01
+dimensions = [32, 32, 32, 32, 32] #hex
 # dimensions = [64, 32, 16, 8] #nim
 activation = "relu"
 

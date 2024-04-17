@@ -72,7 +72,7 @@ class ANET:
         self.model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=[
                            "accuracy", "mae"])
         history = self.model.fit(data["x_train"], data["y_train"],
-                       epochs=10, batch_size=64, verbose=False)
+                       epochs=50, batch_size=64, verbose=True)
         train_score = self.model.evaluate(
             data["x_train"], data["y_train"], verbose=0)
         return train_score[2]
