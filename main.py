@@ -14,7 +14,7 @@ from mcts.mcts import MCTSNode, MonteCarloTreeSearch
 from anytree import Node, RenderTree
 import config.config as config
 from actor.anet import ANET
-from tournament.tournament import Tournament
+from tournaments.topp import Tournament
 import matplotlib.pyplot as plt
 
 
