@@ -26,7 +26,7 @@ class ANET:
             for layer in config.dimensions_conv:
                 model.add(keras.layers.Conv2D(
                     filters=layer,
-                    kernel_size=(3,3),
+                    kernel_size=(3, 3),
                     activation=config.activation,
                     padding="same",
                     strides=(1,1),
@@ -39,11 +39,9 @@ class ANET:
             ))
             model.add(keras.layers.Flatten())
             for layer in config.dimensions_dense:
-                model.add(keras.layers.Dropout(0.2))
                 model.add(keras.layers.Dense(
                     units=layer, 
-                    activation=config.activation,
-                    kernel_regularizer=keras.regularizers.l2(0.01)
+                    activation=config.activation
                 ))
             
             model.add(keras.layers.Dense(
@@ -85,11 +83,11 @@ class ANET:
 
     def save_model(self, num_episodes):
         self.model.save(
-            f"actor/weights/{config.game}_{num_episodes}ep_{config.num_search_games}searches.keras")
+            f"actor/weights/{config.game}_{config.board_size}_{num_episodes}ep_{config.num_search_games}searches.keras")
 
-    def load_model(self, game, num_episodes, num_search_games):
+    def load_model(self, game, board_size, num_episodes, num_search_games):
         return keras.models.load_model(
-            f"actor/weights/{game}_{num_episodes}ep_{num_search_games}searches.keras")
+            f"actor/weights/{game}_{board_size}_{num_episodes}ep_{num_search_games}searches.keras")
 
     def set_model(self, model):
         self.model = model
