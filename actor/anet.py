@@ -84,10 +84,9 @@ class ANET:
     def save_model(self, num_episodes):
         self.model.save(
             f"actor/weights/{config.game}_{config.board_size}_{num_episodes}ep_{config.num_search_games}searches.keras")
-
+    
     def load_model(self, game, board_size, num_episodes, num_search_games):
-        return keras.models.load_model(
-            f"actor/weights/{game}_{board_size}_{num_episodes}ep_{num_search_games}searches.keras")
+        return keras.models.load_model(f"actor/weights/{game}_{board_size}_{num_episodes}ep_{num_search_games}searches.keras")
 
     def set_model(self, model):
         self.model = model
