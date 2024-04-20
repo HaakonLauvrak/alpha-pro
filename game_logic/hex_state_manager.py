@@ -7,6 +7,7 @@ from game_logic.state_manager import STATE_MANAGER
 class HEX_STATE_MANAGER(STATE_MANAGER):
     def __init__(self, gui) -> None:
         self.gui = gui
+    
     def getLegalMoves(self, state) -> list:
         if self.isGameOver(state):
             return []

@@ -6,6 +6,7 @@ class HEX_BOARD(BOARD):
     
     def __init__(self, board_size) -> None:
         self.cells = []
+
         for i in range(board_size):
             for j in range(board_size):
                 self.cells.append(HEX_CELL((i, j), self))
@@ -18,10 +19,9 @@ class HEX_BOARD(BOARD):
         return self.cells
     
     def set_cell(self, position, player):
-
         for cell in self.cells:
             if cell.position == position:
-                cell.state = player
+                cell.set_state(player)
                 break
      
     def setCells(self, cells):
@@ -52,7 +52,16 @@ class HEX_CELL():
         self.position = position
         self.board = board
         self.neighbours = []
-        
+
+    def __str__(self) -> str:
+        return "Pos: " + str(self.position) + " State: " + str(self.state)
+    
+    def __repr__(self) -> str:
+        return "Pos: " + str(self.position) + " State: " + str(self.state)
+    
+    def set_state(self, state) -> None:
+        self.state = state
+
     def set_neighbours(self) -> None:
         cells = self.board.get_cells()
         for cell in cells:
