@@ -14,7 +14,7 @@ class STATE_MANAGER(ABC):
         self.state = state
 
     def findMove(self, state, actor, greedy=False) -> tuple[int, int]:
-        self.epsilon =  1 - self.current_episode / config.num_episodes
+        self.epsilon = 1 - self.current_episode / config.num_episodes
         all_moves = self.find_all_moves()
         probabilities = actor.compute_move_probabilities(state[0].get_ann_input(state[1]))[0]
         legal_moves = self.getLegalMovesList(state)
