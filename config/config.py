@@ -9,10 +9,11 @@ nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 20
-num_search_games = 5000
-time_limit = 3
+num_episodes = 2
+num_search_games = 10000
+time_limit = 10
 c = 1
+epsilon = 1
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.

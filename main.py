@@ -78,73 +78,73 @@ if __name__ == "__main__":
 
     ### HEX GAME MCTS WITH ANN TEST ###
 
-    # game_gui = HEX_GAME_GUI()
-    # sm = HEX_STATE_MANAGER(game_gui)
-    # anet = ANET("training_net")
-    # state = [HEX_BOARD(config.board_size), 1]
-    # game_gui.updateBoard(state[0])
-    # mcts = MonteCarloTreeSearch(state, anet, sm)
-    # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    # gui_thread.start()
-    # acc = []
-    # loss = []
-    # mae = []
-    # replay_buffer = REPLAY_BUFFER(10000)
-    # for i in range(config.num_episodes):
-    #     print(i)
-    #     while not sm.isGameOver(state):
-    #         mcts.search()
-    #         bestAction = mcts.best_action()
-    #         print(bestAction)
-    #         sm.makeMove(bestAction, state)
-    #         mcts.update_root(bestAction)
-    #     x_train, y_train = mcts.extract_training_data()
-    #     replay_buffer.add(x_train, y_train)
-    #     training_score = (anet.train_model(replay_buffer.get_all()))
-    #     loss.append(training_score[0])
-    #     acc.append(training_score[1])
-    #     mae.append(training_score[2])
-    #     state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
-    #     game_gui.updateBoard(state[0])
-    #     sm.setState(state)
-    #     mcts = MonteCarloTreeSearch(state, anet, sm)
-    #     if (i + 1) % 5 == 0 or i == 0:
-    #         anet.save_model(i + 1)
+    game_gui = HEX_GAME_GUI()
+    sm = HEX_STATE_MANAGER(game_gui)
+    anet = ANET("training_net")
+    state = [HEX_BOARD(config.board_size), 1]
+    game_gui.updateBoard(state[0])
+    mcts = MonteCarloTreeSearch(state, anet, sm)
+    gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    gui_thread.start()
+    acc = []
+    loss = []
+    mae = []
+    replay_buffer = REPLAY_BUFFER(10000)
+    for i in range(config.num_episodes):
+        print(i)
+        while not sm.isGameOver(state):
+            mcts.search()
+            bestAction = mcts.best_action()
+            print(bestAction)
+            sm.makeMove(bestAction, state)
+            mcts.update_root(bestAction)
+        x_train, y_train = mcts.extract_training_data()
+        replay_buffer.add(x_train, y_train)
+        training_score = (anet.train_model(replay_buffer.get_all()))
+        loss.append(training_score[0])
+        acc.append(training_score[1])
+        mae.append(training_score[2])
+        state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
+        game_gui.updateBoard(state[0])
+        sm.setState(state)
+        mcts = MonteCarloTreeSearch(state, anet, sm)
+        if (i + 1) % 5 == 0 or i == 0:
+            anet.save_model(i + 1)
 
-    # print(acc)
-    # # Plot the accuracy
-    # fig = plt.figure()
+    print(acc)
+    # Plot the accuracy
+    fig = plt.figure()
 
-    # # Add subplots
-    # # Subplot 1: Accuracy
-    # ax1 = fig.add_subplot(311)
-    # ax1.plot(acc, label='Accuracy')
-    # ax1.set_title('Model Accuracy')
-    # ax1.set_ylabel('Accuracy')
-    # ax1.legend(loc='upper left')
+    # Add subplots
+    # Subplot 1: Accuracy
+    ax1 = fig.add_subplot(311)
+    ax1.plot(acc, label='Accuracy')
+    ax1.set_title('Model Accuracy')
+    ax1.set_ylabel('Accuracy')
+    ax1.legend(loc='upper left')
 
-    # # Subplot 2: Loss
-    # ax2 = fig.add_subplot(312)
-    # ax2.plot(loss, label='Loss', color='orange')
-    # ax2.set_title('Model Loss')
-    # ax2.set_ylabel('Loss')
-    # ax2.legend(loc='upper left')
+    # Subplot 2: Loss
+    ax2 = fig.add_subplot(312)
+    ax2.plot(loss, label='Loss', color='orange')
+    ax2.set_title('Model Loss')
+    ax2.set_ylabel('Loss')
+    ax2.legend(loc='upper left')
 
-    # # Subplot 3: MAE
-    # ax3 = fig.add_subplot(313)
-    # ax3.plot(mae, label='Mean Absolute Error', color='green')
-    # ax3.set_title('Mean Absolute Error')
-    # ax3.set_ylabel('MAE')
-    # ax3.set_xlabel('Games')
-    # ax3.legend(loc='upper left')
+    # Subplot 3: MAE
+    ax3 = fig.add_subplot(313)
+    ax3.plot(mae, label='Mean Absolute Error', color='green')
+    ax3.set_title('Mean Absolute Error')
+    ax3.set_ylabel('MAE')
+    ax3.set_xlabel('Games')
+    ax3.legend(loc='upper left')
 
-    # # Adjust layout to prevent overlap
-    # plt.tight_layout()
+    # Adjust layout to prevent overlap
+    plt.tight_layout()
 
-    # # Show the figure
-    # plt.show()
+    # Show the figure
+    plt.show()
 
-    # print("Done")
+    print("Done")
 
     # # NIM GAME MCTS WITH ANN TEST ###
 
@@ -180,43 +180,43 @@ if __name__ == "__main__":
     # print("Done")
 
     ## HEX TURNAMENT TEST ##
-    anet0 = ANET("Player0")
-    anet1 = ANET("Player1")
-    anet2 = ANET("Player2")
-    anet3 = ANET("Player3")
-    anet4 = ANET("Player4")
+    # anet0 = ANET("Player0")
+    # anet1 = ANET("Player1")
+    # anet2 = ANET("Player2")
+    # anet3 = ANET("Player3")
+    # anet4 = ANET("Player4")
 
-    it0_model = anet0.load_model("hex", 7,  1, 5000)
-    anet0.set_model(it0_model)
-    it1_model = anet1.load_model("hex", 7,  5, 5000)
-    anet1.set_model(it1_model)
-    it2_model = anet2.load_model("hex", 7,  10, 5000)
-    anet2.set_model(it2_model)
-    it3__model = anet3.load_model("hex", 7,  15, 5000)
-    anet3.set_model(it3__model)
-    it4__model = anet4.load_model("hex", 7,  20, 5000)
-    anet4.set_model(it4__model)
+    # it0_model = anet0.load_model("hex", 7,  1, 5000)
+    # anet0.set_model(it0_model)
+    # it1_model = anet1.load_model("hex", 7,  5, 5000)
+    # anet1.set_model(it1_model)
+    # it2_model = anet2.load_model("hex", 7,  10, 5000)
+    # anet2.set_model(it2_model)
+    # it3__model = anet3.load_model("hex", 7,  15, 5000)
+    # anet3.set_model(it3__model)
+    # it4__model = anet4.load_model("hex", 7,  20, 5000)
+    # anet4.set_model(it4__model)
 
-    players = [anet0, anet4]
-    gui = HEX_GAME_GUI()
-    sm = HEX_STATE_MANAGER(gui)
-    tournament = Tournament(players, sm, 50, "hex")
-    results = tournament.play_tournament()
-    main_dict = {}
-    for dict in results:
-        for key in dict:
-            if key in main_dict:
-                main_dict[key] += dict[key]
-            else:
-                main_dict[key] = dict[key]
-        print(dict)
-    print(main_dict)
+    # players = [anet0, anet4]
+    # gui = HEX_GAME_GUI()
+    # sm = HEX_STATE_MANAGER(gui)
+    # tournament = Tournament(players, sm, 50, "hex")
+    # results = tournament.play_tournament()
+    # main_dict = {}
+    # for dict in results:
+    #     for key in dict:
+    #         if key in main_dict:
+    #             main_dict[key] += dict[key]
+    #         else:
+    #             main_dict[key] = dict[key]
+    #     print(dict)
+    # print(main_dict)
 
-    #plot main dict as bar chart
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.bar(main_dict.keys(), main_dict.values())
-    plt.show()
+    # #plot main dict as bar chart
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111)
+    # ax.bar(main_dict.keys(), main_dict.values())
+    # plt.show()
 
     # GENERATE TRAINING DATA FOR HEX ##
     # game_gui = HEX_GAME_GUI()

@@ -38,14 +38,14 @@ class MonteCarloTreeSearch:
     def expand_node(self, node):
         legal_moves = self.state_manager.getLegalMoves(node.state)
         for move in legal_moves:
-            new_state = self.state_manager.simulateMove(move, node.state)
+            new_state = self.state_manager.simulateMove(node.state, self.actor_network, move)
             MCTSNode(new_state, parent=node, action=move)
 
     def rollout(self, node):
         # Simulate a game from the current state
         current_state = node.state
         while not self.state_manager.isGameOver(current_state):
-            self.state_manager.simulateMove(current_state, self.actor_network)
+            current_state = self.state_manager.simulateMove(current_state, self.actor_network)
         self.backpropagate(node, self.state_manager.getReward(current_state))
 
     def backpropagate(self, node, reward):
