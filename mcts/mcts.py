@@ -45,22 +45,7 @@ class MonteCarloTreeSearch:
         # Simulate a game from the current state
         current_state = node.state
         while not self.state_manager.isGameOver(current_state):
-            legal_moves_list = self.state_manager.getLegalMovesList(current_state)
-            probabilites = self.actor_network.compute_move_probabilities(current_state[0].get_ann_input(current_state[1]))[0]
-            probabilites_normalized = [
-                probabilites[i] if legal_moves_list[i] == 1 else 0 for i in range(len(legal_moves_list))]
-            if sum(probabilites_normalized) == 0:
-                possible_moves = []
-                for i in range(len(legal_moves_list)):
-                    if legal_moves_list[i] == 1:
-                        possible_moves.append(self.all_moves[i])
-                move = random.choice(possible_moves)
-            else:
-                probabilites_normalized = [
-                x / sum(probabilites_normalized) for x in probabilites_normalized]
-                move = random.choices(population = self.all_moves, weights = probabilites_normalized)[0]
-            current_state = self.state_manager.simulateMove(
-                move, current_state)
+            self.state_manager.simulateMove(current_state, self.actor_network)
         self.backpropagate(node, self.state_manager.getReward(current_state))
 
     def backpropagate(self, node, reward):

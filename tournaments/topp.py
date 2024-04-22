@@ -27,39 +27,24 @@ class Tournament():
         if self.game_type == "hex":
             return [HEX_BOARD(config.board_size), 1]
         
-
-    def play(self, player1, player2):
+def play(self, player1, player2):
         results = {player1.name: 0, player2.name: 0}
         for i in range(self.rounds):
             print("Round: " + str(i + 1))
             current_state = self.make_new_game()
-            all_moves = self.state_manager.find_all_moves()
             while not self.state_manager.isGameOver(current_state):
                 if current_state[1] == 1:
-                    probabilities = player1.compute_move_probabilities(current_state[0].get_ann_input(current_state[1]))[0]
-                    if sum(probabilities) == 0:
-                        move = random.choice(self.state_manager.getLegalMoves(current_state))
-                    else:
-                        legal_moves = self.state_manager.getLegalMovesList(current_state)
-                        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
-                        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
-                        move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
+                    move = self.state_manger.findMove(current_state, player1)
                 else:
-                    probabilities = player2.compute_move_probabilities(current_state[0].get_ann_input(current_state[1]))[0]
-                    if sum(probabilities) == 0:
-                        move = random.choice(self.state_manager.getLegalMoves(current_state))
-                    else:
-                        legal_moves = self.state_manager.getLegalMovesList(current_state)
-                        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
-                        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
-                        move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
-                    
+                    move = self.state_manger.findMove(current_state, player2)
                 self.state_manager.makeMove(move, current_state)
             if self.state_manager.getReward(current_state) == -1:
                 results[player1.name] += 1
             else:
                 results[player2.name] += 1
         return results
+
+
         
 
 

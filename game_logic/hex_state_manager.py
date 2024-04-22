@@ -1,4 +1,7 @@
 import copy
+import random
+
+import numpy as np
 import config.config as config
 from gui.hex_board import HEX_BOARD
 from game_logic.state_manager import STATE_MANAGER
@@ -6,6 +9,7 @@ from game_logic.state_manager import STATE_MANAGER
 
 class HEX_STATE_MANAGER(STATE_MANAGER):
     def __init__(self, gui) -> None:
+        super().__init__()
         self.gui = gui
     
     def getLegalMoves(self, state) -> list:
@@ -20,7 +24,10 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         state[1] = 1 if state[1] == -1 else -1
         self.gui.updateBoard(state[0])
     
-    def simulateMove(self, move, state) -> tuple:
+    def simulateMove(self, state, actor) -> tuple:
+        
+        move = super().findMove(state, actor)
+        
         if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
         
@@ -35,8 +42,10 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
 
         def dfs(cell, player):
             if player == 1 and cell.position[0] == board_size - 1:  # Player 1 reaches the bottom
+                super().increment_episode()
                 return True
             if player == -1 and cell.position[1] == board_size - 1:  # Player -1 reaches the right side
+                super().increment_episode()
                 return True
 
             visited.add(cell)
@@ -76,5 +85,3 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         legal_moves = self.getLegalMoves(state)
         legal_moves_list = [1 if (i, j) in legal_moves else 0 for i in range(config.board_size) for j in range(config.board_size)]
         return legal_moves_list
-
-

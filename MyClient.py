@@ -25,21 +25,8 @@ class MyClient(ActorClient.ActorClient):
         current_state = [self.board, 1]
         
         self.state_manager = HEX_STATE_MANAGER(self.board)    
-
-        all_moves = self.state_manager.find_all_moves()
-        # print(current_state[0].get_ann_input(current_state[1]))
-        probabilities = self.actor.compute_move_probabilities(current_state[0].get_ann_input(current_state[1]))[0]
         
-        if sum(probabilities) == 0:
-            move = random.choice(self.state_manager.getLegalMoves(current_state))
-        else:
-            legal_moves = self.state_manager.getLegalMovesList(current_state)
-            # print("legal moves: ", legal_moves)
-            probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
-            probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
-            move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
-        
-        return move
+        return self.state_manager.findMove(current_state, self.actor, greedy=True)
     
 if __name__ == "__main__":
     client = MyClient()
