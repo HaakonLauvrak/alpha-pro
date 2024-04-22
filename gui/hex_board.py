@@ -39,9 +39,14 @@ class HEX_BOARD(BOARD):
     
     def get_ann_input(self, player):
         cell_states = [cell.state for cell in self.cells]
-        ann_input = np.array([np.array([np.array([0, 0]) for i in range(config.board_size)]) for i in range(config.board_size)])
+        ann_input = np.array([np.array([np.array([0, 0, 0]) for i in range(config.board_size)]) for i in range(config.board_size)])
         for i in range(len(cell_states)):
-            ann_input[(i//config.board_size)] = np.array([cell_states[i], player])
+            if cell_states[i] == 1:
+                ann_input[(i//config.board_size)][(i%config.board_size)] = np.array([1, 0, player])
+            elif cell_states[i] == -1:
+                ann_input[(i//config.board_size)][(i%config.board_size)] = np.array([0, 1, player])
+            else:
+                ann_input[(i//config.board_size)][(i%config.board_size)] = np.array([0, 0, player])
         ann_input = np.expand_dims(ann_input, axis=0)
         return ann_input
     

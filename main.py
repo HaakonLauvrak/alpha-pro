@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # print(dict)
 
 
-    # HEX GAME MCTS WITH ANN TEST ###
+    ###HEX GAME MCTS WITH ANN TEST ###
 
     # game_gui = HEX_GAME_GUI()
     # sm = HEX_STATE_MANAGER(game_gui)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     #         mcts.update_root(bestAction)
     #     x_train, y_train = mcts.extract_training_data()
     #     replay_buffer.add(x_train, y_train)
-    #     training_score = (anet.train_model(replay_buffer.get_data()))
+    #     training_score = (anet.train_model(replay_buffer.get_all()))
     #     acc.append(training_score[0])
     #     loss.append(training_score[1])
     #     mae.append(training_score[2])
@@ -225,48 +225,50 @@ if __name__ == "__main__":
 
 
     # GENERATE TRAINING DATA FOR HEX ##
-    game_gui = HEX_GAME_GUI()
-    sm = HEX_STATE_MANAGER(game_gui)
-    anet = ANET("training_net")
-    state = [HEX_BOARD(config.board_size), 1]
-    game_gui.updateBoard(state[0])
-    gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
-    gui_thread.start()
-    replay_buffer = REPLAY_BUFFER(10000)
-    for i in range(10):
-        print(i)
-        if i % 2 == 0:
-            state = [HEX_BOARD(config.board_size), -1]
-        else:
-            state = [HEX_BOARD(config.board_size), 1]
-        mcts = MonteCarloTreeSearch(state, anet, sm)
-        while not sm.isGameOver(state):
-            mcts.search()
-            bestAction = mcts.best_action()
-            print(bestAction)
-            sm.makeMove(bestAction, state)
-            mcts.update_root(bestAction)
-        x_train, y_train = mcts.extract_training_data()
-        replay_buffer.add(x_train, y_train)
-        print(replay_buffer.get_size())
-    replay_buffer.save("training_data/hex_training_data")
+    # game_gui = HEX_GAME_GUI()
+    # sm = HEX_STATE_MANAGER(game_gui)
+    # anet = ANET("training_net")
+    # state = [HEX_BOARD(config.board_size), 1]
+    # game_gui.updateBoard(state[0])
+    # gui_thread = threading.Thread(target=start_gui, args=(game_gui,))
+    # gui_thread.start()
+    # replay_buffer = REPLAY_BUFFER(10000)
+    # for i in range(10):
+    #     if replay_buffer.get_size() == 10000:
+    #         break
+    #     print(i)
+    #     if i % 2 == 0:
+    #         state = [HEX_BOARD(config.board_size), -1]
+    #     else:
+    #         state = [HEX_BOARD(config.board_size), 1]
+    #     mcts = MonteCarloTreeSearch(state, anet, sm)
+    #     while not sm.isGameOver(state):
+    #         mcts.search()
+    #         bestAction = mcts.best_action()
+    #         print(bestAction)
+    #         sm.makeMove(bestAction, state)
+    #         mcts.update_root(bestAction)
+    #     x_train, y_train = mcts.extract_training_data()
+    #     replay_buffer.add(x_train, y_train)
+    #     print(replay_buffer.get_size())
+    # replay_buffer.save("training_data/hex_training_data")
 
     ## TRAIN NEURAL NET ON HEX TRAINING DATA ##
 
-    # replay_buffer = REPLAY_BUFFER(10000)
-    # replay_buffer.load("training_data/hex_training_data.npz")
-    # acc = []
-    # loss = []
-    # mae = []
-    # for i in range(5):
-    #     print(i)
-    #     anet = ANET("training_net")
-    #     training_score = anet.train_model(replay_buffer.get_all())
-    #     acc.append(training_score[0])
-    #     loss.append(training_score[1])
-    #     mae.append(training_score[2])
+    replay_buffer = REPLAY_BUFFER(10000)
+    replay_buffer.load("training_data/hex_training_data.npz")
+    acc = []
+    loss = []
+    mae = []
+    for i in range(5):
+        print(i)
+        anet = ANET("training_net")
+        training_score = anet.train_model(replay_buffer.get_all())
+        acc.append(training_score[0])
+        loss.append(training_score[1])
+        mae.append(training_score[2])
     
-    ## Print avg accuracy, loss and mae
-    # print("Avg accuracy: ", sum(acc) / len(acc))
-    # print("Avg loss: ", sum(loss) / len(loss))
-    # print("Avg mae: ", sum(mae) / len(mae))
+    # Print avg accuracy, loss and mae
+    print("Avg accuracy: ", sum(acc) / len(acc))
+    print("Avg loss: ", sum(loss) / len(loss))
+    print("Avg mae: ", sum(mae) / len(mae))

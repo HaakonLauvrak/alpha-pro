@@ -12,7 +12,7 @@ class ANET:
             self.input_shape = (2,)
             self.output_shape = (config.nim_K)
         elif config.game == "hex":
-            self.input_shape = (config.board_size, config.board_size, 2)
+            self.input_shape = (config.board_size, config.board_size, 3)
             self.output_shape = (config.board_size**2)
         self.model = self.build_model()
 

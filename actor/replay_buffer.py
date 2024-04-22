@@ -16,7 +16,7 @@ class REPLAY_BUFFER():
         self.storage_y_train += y_train
 
     def get_all(self):
-        training_data = {"x_train": self.storage_x_train, "y_train": self.storage_y_train}
+        training_data = {"x_train": np.array(self.storage_x_train), "y_train": np.array(self.storage_y_train)}
         return training_data
     
     def sample(self, batch_size):
