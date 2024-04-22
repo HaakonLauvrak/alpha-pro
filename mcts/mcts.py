@@ -154,8 +154,6 @@ class MonteCarloTreeSearch:
                     x_train = node.state[0].get_ann_input(node.state[1])
                     training_data["x_train"].append(x_train[0])
                     training_data["y_train"].append(visits_list)
-        training_data["x_train"] = np.array(training_data["x_train"])
-        training_data["y_train"] = np.array(training_data["y_train"])
-        return training_data
+        return training_data["x_train"], training_data["y_train"]
 
 
