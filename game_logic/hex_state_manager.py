@@ -9,8 +9,8 @@ from game_logic.state_manager import STATE_MANAGER
 
 class HEX_STATE_MANAGER(STATE_MANAGER):
     def __init__(self, gui) -> None:
+        super().__init__()
         self.gui = gui
-        self.epsilon = config.epsilon
     
     def getLegalMoves(self, state) -> list:
         if self.isGameOver(state):
@@ -42,8 +42,10 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
 
         def dfs(cell, player):
             if player == 1 and cell.position[0] == board_size - 1:  # Player 1 reaches the bottom
+                super().increment_episode()
                 return True
             if player == -1 and cell.position[1] == board_size - 1:  # Player -1 reaches the right side
+                super().increment_episode()
                 return True
 
             visited.add(cell)

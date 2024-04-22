@@ -1,14 +1,20 @@
 from abc import ABC, abstractmethod
 import random
-
+import config.config as config
 import numpy as np
 
 class STATE_MANAGER(ABC):
     
-    def setState(self, state):
+    def __init__(self) -> None:
+        self.epsilon = config.epsilon
+        self.current_episode = 0
+        self.num_episodes = config.num_episodes
+
+    def setState(self, state) -> None:
         self.state = state
 
     def findMove(self, state, actor, greedy=False) -> tuple[int, int]:
+        self.epsilon =  1 - self.current_episode / config.num_episodes
         all_moves = self.find_all_moves()
         probabilities = actor.compute_move_probabilities(state[0].get_ann_input(state[1]))[0]
         legal_moves = self.getLegalMovesList(state)
@@ -27,6 +33,9 @@ class STATE_MANAGER(ABC):
                 else: 
                     move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
         return move
+    
+    def increment_episode(self):
+        self.current_episode += 1
 
     @abstractmethod
     def getLegalMoves(self, state):

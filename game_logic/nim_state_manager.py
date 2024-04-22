@@ -4,6 +4,9 @@ from game_logic.state_manager import STATE_MANAGER
 import config.config as config
 
 class NIM_STATE_MANAGER(STATE_MANAGER):
+
+    def __init__(self) -> None:
+        super().__init__()
     
     def getLegalMoves(self, state):
         return [i for i in range(1, (min(config.nim_K, state[0].get_state())) + 1)]
@@ -20,7 +23,10 @@ class NIM_STATE_MANAGER(STATE_MANAGER):
         return new_state
     
     def isGameOver(self, state):
-        return state[0].get_state() <= 0
+        if state[0].get_state() <= 0:
+            super().increment_episode()
+            return True
+        return False
     
     def getReward(self, state):
         return -state[1]

@@ -13,7 +13,6 @@ num_episodes = 150
 num_search_games = 15000
 time_limit = 10
 c = 1
-epsilon = 0.1
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
