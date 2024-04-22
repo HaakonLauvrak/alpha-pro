@@ -24,7 +24,7 @@ class NIM_STATE_MANAGER(STATE_MANAGER):
     
     def isGameOver(self, state):
         if state[0].get_state() <= 0:
-            super().increment_episode()
+            super(NIM_STATE_MANAGER, self).increment_episode()
             return True
         return False
     
@@ -37,5 +37,3 @@ class NIM_STATE_MANAGER(STATE_MANAGER):
     def getLegalMovesList(self, state):
         legal_moves = self.getLegalMoves(state)
         return [1 if i in legal_moves else 0 for i in range(1, config.nim_K + 1)]
-    
-    

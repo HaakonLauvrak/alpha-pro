@@ -23,10 +23,18 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         state[0].set_cell(move, state[1])
         state[1] = 1 if state[1] == -1 else -1
         self.gui.updateBoard(state[0])
+
     
-    def simulateMove(self, state, actor) -> tuple:
+    def simulateMove(self, state, actor, move=None) -> tuple:
+        """Simulate a move for the given state and actor.
+        Args:
+            state (tuple): The current state of the game.
+            actor (int): The policy network making the move.
+            move (tuple, optional): The move to make. Move=none for rollout simulations.
+        """
         
-        move = super().findMove(state, actor)
+        if move is None: 
+            move = super().findMove(state, actor)
         
         if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
@@ -42,10 +50,10 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
 
         def dfs(cell, player):
             if player == 1 and cell.position[0] == board_size - 1:  # Player 1 reaches the bottom
-                super().increment_episode()
+                super(HEX_STATE_MANAGER, self).increment_episode()
                 return True
             if player == -1 and cell.position[1] == board_size - 1:  # Player -1 reaches the right side
-                super().increment_episode()
+                super(HEX_STATE_MANAGER, self).increment_episode()
                 return True
 
             visited.add(cell)
