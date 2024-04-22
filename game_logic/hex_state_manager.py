@@ -1,4 +1,7 @@
 import copy
+import random
+
+import numpy as np
 import config.config as config
 from gui.hex_board import HEX_BOARD
 from game_logic.state_manager import STATE_MANAGER
@@ -7,6 +10,7 @@ from game_logic.state_manager import STATE_MANAGER
 class HEX_STATE_MANAGER(STATE_MANAGER):
     def __init__(self, gui) -> None:
         self.gui = gui
+        self.epsilon = config.epsilon
     
     def getLegalMoves(self, state) -> list:
         if self.isGameOver(state):
@@ -20,7 +24,10 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         state[1] = 1 if state[1] == -1 else -1
         self.gui.updateBoard(state[0])
     
-    def simulateMove(self, move, state) -> tuple:
+    def simulateMove(self, state, actor) -> tuple:
+        
+        move = self.findMove(state, actor)
+        
         if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
         
@@ -78,3 +85,22 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         return legal_moves_list
 
 
+    def findMove(self, state, actor, greedy=False) -> tuple[int, int]:
+        all_moves = self.find_all_moves()
+        probabilities = actor.compute_move_probabilities(state[0].get_ann_input(state[1]))[0]
+        legal_moves = self.getLegalMovesList(state)
+        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
+        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
+
+        if sum(probabilities) == 0:
+            move = random.choice(self.getLegalMoves(state))
+        else:
+            if greedy: 
+                greedy_index = np.argmax(probabilites_normalized)
+                move = all_moves[greedy_index]
+            else: 
+                if self.epsilon > random.random():
+                    move = random.choice(self.getLegalMoves(state))
+                else: 
+                    move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
+        return move
