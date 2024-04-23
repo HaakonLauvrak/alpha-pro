@@ -34,7 +34,7 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         """
         
         if move is None: 
-            move = super().findMove(state, actor)
+            move = self.findMove(state, actor)
         
         if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
@@ -50,10 +50,8 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
 
         def dfs(cell, player):
             if player == 1 and cell.position[0] == board_size - 1:  # Player 1 reaches the bottom
-                super(HEX_STATE_MANAGER, self).increment_episode()
                 return True
             if player == -1 and cell.position[1] == board_size - 1:  # Player -1 reaches the right side
-                super(HEX_STATE_MANAGER, self).increment_episode()
                 return True
 
             visited.add(cell)
@@ -93,3 +91,24 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         legal_moves = self.getLegalMoves(state)
         legal_moves_list = [1 if (i, j) in legal_moves else 0 for i in range(config.board_size) for j in range(config.board_size)]
         return legal_moves_list
+    
+    def findMove(self, state, actor, greedy=False) -> tuple[int, int]:
+        self.epsilon = 1 - self.current_episode / config.num_episodes
+        all_moves = self.find_all_moves()
+        probabilities = actor.compute_move_probabilities(state[0].get_ann_input(state[1]))[0]
+        legal_moves = self.getLegalMovesList(state)
+        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
+        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
+
+        if sum(probabilities) == 0:
+            move = random.choice(self.getLegalMoves(state))
+        else:
+            if greedy: 
+                greedy_index = np.argmax(probabilites_normalized)
+                move = all_moves[greedy_index]
+            else: 
+                if self.epsilon > random.random():
+                    move = random.choice(self.getLegalMoves(state))
+                else: 
+                    move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
+        return move

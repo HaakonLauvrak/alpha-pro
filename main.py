@@ -98,6 +98,7 @@ if __name__ == "__main__":
             print(bestAction)
             sm.makeMove(bestAction, state)
             mcts.update_root(bestAction)
+        sm.increment_episode() #must be done here to avoid incrementing episode when simulations reach end state.
         x_train, y_train = mcts.extract_training_data()
         replay_buffer.add(x_train, y_train)
         training_score = (anet.train_model(replay_buffer.get_all()))
@@ -166,6 +167,7 @@ if __name__ == "__main__":
     #         print("----------------------------------")
     #         sm.makeMove(bestAction, state)
     #         mcts.update_root(bestAction)
+    #     sm.increment_episode()
     #     training_data = mcts.extract_training_data()
     #     print("----------------------------------")
     #     print(training_data)
