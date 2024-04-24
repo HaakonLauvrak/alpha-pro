@@ -18,8 +18,13 @@ class NIM_STATE_MANAGER(STATE_MANAGER):
         state[0].set_state(state[0].get_state() - move)
         state[1] = 1 if state[1] == -1 else -1
     
-    def simulateMove(self, state, actor):
-        move = self.findMove(state, actor)
+    def simulateMove(self, state, actor, move=None):
+        if move is None: 
+            move = self.findMove(state, actor)
+        
+        if move not in self.getLegalMoves(state):
+            raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
+
         new_state = copy.deepcopy(state)
         new_state[0].set_state(new_state[0].get_state() - move)
         new_state[1] = 1 if new_state[1] == -1 else -1

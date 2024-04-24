@@ -54,7 +54,7 @@ class ANET:
         else:
             model = keras.Sequential()
             model.add(keras.layers.InputLayer(shape=self.input_shape))
-            for layer in config.dimensions:
+            for layer in config.dimensions_nim:
                 model.add(keras.layers.Dense(
                     units=layer, activation=config.activation))
             model.add(keras.layers.Dense(

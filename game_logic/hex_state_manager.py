@@ -112,3 +112,5 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
                 else: 
                     move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
         return move
+    
+    

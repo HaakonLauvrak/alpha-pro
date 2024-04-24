@@ -14,6 +14,7 @@ num_search_games = 10000
 time_limit = 10
 c = 1
 epsilon = 1
+replay_buffer_size = 10000
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
@@ -22,7 +23,7 @@ epochs = 15
 batch_size = 128
 dimensions_conv = [64, 64, 64, 64, 64] #hex
 dimensions_dense = [32] #hex
-# dimensions = [64, 32, 16, 8] #nim
+dimensions_nim = [64, 32, 16, 8] #nim
 activation = "relu"
 
 #The optimizer in the ANET, with (at least) the following options all available: 
@@ -33,5 +34,3 @@ optimizer = "adam"
 #The number (M) of ANETs to be cached in preparation for a TOPP. These should be cached, starting with an untrained net prior to episode 1, at a fixed interval throughout the training episodes.
 M = 4
 
-#The number of games, G, to be played between any two ANET-based agents that meet during the round-robin play of the TOPP.
-G = 5
