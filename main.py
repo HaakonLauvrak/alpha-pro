@@ -7,8 +7,8 @@ if __name__ == "__main__":
     # PLAY().generate_training_data_hex()
     # PLAY().train_hex_actor()
     # PLAY().search_and_train_nim()
-    # PLAY().play_hex()
-    # PLAY().play_nim()
+    # PLAY().play_hex_mcts()
+    # PLAY().play_nim_mcts()
     # PLAY().topp()
 
 

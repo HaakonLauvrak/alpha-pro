@@ -9,7 +9,7 @@ import pygame
 from actor.replay_buffer import REPLAY_BUFFER
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
 from gui.hex_board import HEX_BOARD
-from gui.hex_game_gui import HEX_GAME_GUI
+from gui.hex_game_visualizer import HEX_BOARD_VISUALIZER
 from game_logic.hex_state_manager import HEX_STATE_MANAGER
 from gui.nim_board import NIM_BOARD
 from mcts.mcts import MCTSNode, MonteCarloTreeSearch
@@ -23,64 +23,50 @@ class PLAY():
     def __init__(self) -> None:
         pass
 
-    def start_gui(self, game_gui):
-        self.running = True
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-            game_gui.drawBoard()
-            # Delay to limit the number of redraws per second
-            pygame.time.delay(100)
-        pygame.quit()
-
-    def play_nim_mcts(): 
+    def play_nim_mcts(self): 
         """Play a game of NIM using MCTS without ANET"""
         board = NIM_BOARD()
         board.set_state(config.nim_N)
         state = [board, 1]
         sm = NIM_STATE_MANAGER()
-        ann = ANET()
+        ann = ANET("nim")
         print("Starting nim game")
         print(f"N = {config.nim_N}, K = {config.nim_K}")
         mcts = MonteCarloTreeSearch(state, ann, sm)
         while not sm.isGameOver(state):
-            mcts.search()
-            bestAction = mcts.best_action()
+            bestAction = mcts.search()
             sm.makeMove(bestAction, state)
-            print(f"Player {state[1]} took: ", bestAction)
-        print(f"Player {state[1] * -1} wins!")
+            print(f"Player {-state[1]} took: ", bestAction)
+        print(f"Player {-state[1]} wins!")
     
     def play_hex_mcts(self):
         """Play a game of HEX using MCTS without ANET"""
-        game_gui = HEX_GAME_GUI()
-        sm = HEX_STATE_MANAGER(game_gui)
+        sm = HEX_STATE_MANAGER()
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
-        gui_thread = threading.Thread(target=self.start_gui, args=(game_gui,))
-        gui_thread.start()
+        mcts = MonteCarloTreeSearch(state, anet, sm)
+        visualizer = HEX_BOARD_VISUALIZER(config.board_size)
+        visualizer.update_board(state[0].get_state_list())
         while not sm.isGameOver(state):
-            mcts = MonteCarloTreeSearch(state, anet, sm)
             bestAction = mcts.search()
             sm.makeMove(bestAction, state)
+            mcts.update_root(bestAction)
+            visualizer.update_board(state[0].get_state_list())
             print(f"Player {state[1]} took: ", bestAction)
         print(f"Player {state[1] * -1} wins!")
-        self.running = False
-        gui_thread.join()
+        visualizer.close()
 
     def search_and_train_hex(self):
         """Play a game of HEX using MCTS with ANET"""
-        game_gui = HEX_GAME_GUI()
-        sm = HEX_STATE_MANAGER(game_gui)
+        sm = HEX_STATE_MANAGER()
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
-        game_gui.updateBoard(state[0])
         mcts = MonteCarloTreeSearch(state, anet, sm)
-        gui_thread = threading.Thread(target=self.start_gui, args=(game_gui,))
-        gui_thread.start()
         acc = []
         loss = []
         mae = []
+        visualizer = HEX_BOARD_VISUALIZER(config.board_size)
+        visualizer.update_board(state[0].get_state_list())
         replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
         for i in range(config.num_episodes):
             print(i)
@@ -90,6 +76,7 @@ class PLAY():
                 print(bestAction)
                 sm.makeMove(bestAction, state)
                 mcts.update_root(bestAction)
+                visualizer.update_board(state[0].get_state_list())
             sm.increment_episode() #must be done here to avoid incrementing episode when simulations reach end state.
             x_train, y_train = mcts.extract_training_data()
             replay_buffer.add(x_train, y_train)
@@ -98,13 +85,10 @@ class PLAY():
             acc.append(training_score[1])
             mae.append(training_score[2])
             state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
-            game_gui.updateBoard(state[0])
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
             if i % (config.num_episodes // config.M) == 0:
                 anet.save_model(i + 1)
-        self.running = False
-        gui_thread.join()
         print(acc)
 
         fig = plt.figure()
@@ -182,8 +166,7 @@ class PLAY():
         
 
         players = [anet0, anet1, anet2, anet3]
-        gui = HEX_GAME_GUI()
-        sm = HEX_STATE_MANAGER(gui)
+        sm = HEX_STATE_MANAGER()
         tournament = Tournament(players, sm, 50, "hex")
         results = tournament.play_tournament()
         main_dict = {}
