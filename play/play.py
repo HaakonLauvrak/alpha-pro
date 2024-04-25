@@ -148,26 +148,18 @@ class PLAY():
         print(acc)
         print("Done")
 
-    def topp(self, models: list):
+    def topp(self, models: list, rounds):
         """Takes a list of four models and plays a tournament between them"""
-        anet0 = ANET("Player0")
-        anet1 = ANET("Player1")
-        anet2 = ANET("Player2")
-        anet3 = ANET("Player3")
 
-        it0_model = anet0.load_model(models[0])
-        anet0.set_model(it0_model)
-        it1_model = anet1.load_model(models[1])
-        anet1.set_model(it1_model)
-        it2_model = anet2.load_model(models[2])
-        anet2.set_model(it2_model)
-        it3__model = anet3.load_model(models[3])
-        anet3.set_model(it3__model)
-        
+        players = []
+        for i in range(len(models)):
+            anet = ANET(f"Player{i}")
+            model = anet.load_model_by_name(models[i])
+            anet.set_model(model)
+            players.append(anet)
 
-        players = [anet0, anet1, anet2, anet3]
         sm = HEX_STATE_MANAGER()
-        tournament = Tournament(players, sm, 50, "hex")
+        tournament = Tournament(players, sm, rounds, "hex")
         results = tournament.play_tournament()
         main_dict = {}
         for dict in results:
@@ -187,15 +179,11 @@ class PLAY():
 
     def generate_training_data_hex(self):
         """Generates training data for HEX using MCTS without anet. Saves data to file."""
-        game_gui = HEX_GAME_GUI()
-        sm = HEX_STATE_MANAGER(game_gui)
+        sm = HEX_STATE_MANAGER()
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
-        game_gui.updateBoard(state[0])
-        # gui_thread = threading.Thread(target=self.start_gui, args=(game_gui,))
-        # gui_thread.start()
         replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
-        
+    
         game_counter = 0
         for i in range(config.num_episodes):
             if replay_buffer.get_size() == config.replay_buffer_size:
