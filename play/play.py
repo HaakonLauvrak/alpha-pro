@@ -101,7 +101,7 @@ class PLAY():
             game_gui.updateBoard(state[0])
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
-            if i % (config.num_episiodes // config.M) == 0:
+            if i % (config.num_episodes // config.M) == 0:
                 anet.save_model(i + 1)
         self.running = False
         gui_thread.join()
@@ -231,14 +231,14 @@ class PLAY():
             print(replay_buffer.get_size())
         replay_buffer.save("training_data/hex_training_data")
 
-    def train_hex_actor():
-        replay_buffer = REPLAY_BUFFER(10000)
+    def train_hex_actor(self):
+        replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
         replay_buffer.load("training_data/hex_training_data.npz")
         
         acc = []
         loss = []
         mae = []
-       
+    
         for i in range(1):
             print(i)
             anet = ANET("training_net")
