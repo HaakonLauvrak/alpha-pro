@@ -203,6 +203,7 @@ class PLAY():
         plt.show()
 
     def generate_training_data_hex(self):
+        """Generates training data for HEX using MCTS without anet. Saves data to file."""
         game_gui = HEX_GAME_GUI()
         sm = HEX_STATE_MANAGER(game_gui)
         anet = ANET("training_net")
@@ -221,7 +222,7 @@ class PLAY():
                 state = [HEX_BOARD(config.board_size), 1]
             mcts = MonteCarloTreeSearch(state, anet, sm)
             while not sm.isGameOver(state):
-                mcts.search()
+                mcts.search(random=True)
                 bestAction = mcts.best_action()
                 sm.makeMove(bestAction, state)
                 mcts.update_root(bestAction)

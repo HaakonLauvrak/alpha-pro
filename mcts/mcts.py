@@ -41,11 +41,11 @@ class MonteCarloTreeSearch:
             new_state = self.state_manager.simulateMove(node.state, self.actor_network, move)
             MCTSNode(new_state, parent=node, action=move)
 
-    def rollout(self, node):
+    def rollout(self, node, random=False):
         # Simulate a game from the current state
         current_state = node.state
         while not self.state_manager.isGameOver(current_state):
-            current_state = self.state_manager.simulateMove(current_state, self.actor_network)
+            current_state = self.state_manager.simulateMove(current_state, self.actor_network, random)
         self.backpropagate(node, self.state_manager.getReward(current_state))
 
     def backpropagate(self, node, reward):
@@ -94,16 +94,16 @@ class MonteCarloTreeSearch:
         # Return the UCT exploration value for a given state and action
         return config.c * np.sqrt(math.log((s.visits) / (1 + a.visits)))
  
-    def search(self):
+    def search(self, random=False):
         time_limit = config.time_limit
         start_time = time.time()
-        for _ in range(config.num_search_games):
-            if time.time() - start_time > time_limit:
-                break
+        for i in range(config.num_search_games):
+            if config.time_limit > 0 and time.time() - start_time > time_limit:
+                 break
             node = self.select_node()
             if not self.state_manager.isGameOver(node.state):  
                 self.expand_node(node)
-            self.rollout(node)
+            self.rollout(node, random)
         return self.best_action()
 
     def update_root(self, move):
