@@ -222,7 +222,7 @@ class PLAY():
                 state = [HEX_BOARD(config.board_size), 1]
             mcts = MonteCarloTreeSearch(state, anet, sm)
             while not sm.isGameOver(state):
-                mcts.search(random=True)
+                mcts.search(random_move=True)
                 bestAction = mcts.best_action()
                 sm.makeMove(bestAction, state)
                 mcts.update_root(bestAction)

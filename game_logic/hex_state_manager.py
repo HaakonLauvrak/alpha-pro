@@ -25,7 +25,7 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         self.gui.updateBoard(state[0])
 
     
-    def simulateMove(self, state, actor, move=None, random=False) -> tuple:
+    def simulateMove(self, state, actor, move=None, random_move=False) -> tuple:
         """Simulate a move for the given state and actor.
         Args:
             state (tuple): The current state of the game.
@@ -34,7 +34,7 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         """
         
         if move is None: 
-            move = self.findMove(state, actor, random)
+            move = self.findMove(state, actor, random_move=random_move)
         
         if move not in self.getLegalMoves(state):
             raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
@@ -92,9 +92,9 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         legal_moves_list = [1 if (i, j) in legal_moves else 0 for i in range(config.board_size) for j in range(config.board_size)]
         return legal_moves_list
     
-    def findMove(self, state, actor, greedy=False, random=False) -> tuple[int, int]:
+    def findMove(self, state, actor, greedy=False, random_move=False) -> tuple[int, int]:
 
-        if random:
+        if random_move:
             return random.choice(self.getLegalMoves(state))
 
         all_moves = self.find_all_moves()

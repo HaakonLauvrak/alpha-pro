@@ -9,7 +9,7 @@ nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 10
+num_episodes = 100
 num_search_games = 100
 time_limit = 0 #set to 0 for no time limit
 c = 1
