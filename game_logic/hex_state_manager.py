@@ -8,9 +8,8 @@ from game_logic.state_manager import STATE_MANAGER
 
 
 class HEX_STATE_MANAGER(STATE_MANAGER):
-    def __init__(self, gui) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.gui = gui
     
     def getLegalMoves(self, state) -> list:
         if self.isGameOver(state):
@@ -22,7 +21,6 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
             raise ValueError("Invalid move: " + str(move) + " in state: " + str(state[0].get_state(state[1])) + " with legal moves: " + str(self.getLegalMoves(state)))
         state[0].set_cell(move, state[1])
         state[1] = 1 if state[1] == -1 else -1
-        self.gui.updateBoard(state[0])
 
     
     def simulateMove(self, state, actor, move=None) -> tuple:
