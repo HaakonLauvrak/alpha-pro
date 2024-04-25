@@ -209,28 +209,34 @@ class PLAY():
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
         game_gui.updateBoard(state[0])
-        gui_thread = threading.Thread(target=self.start_gui, args=(game_gui,))
-        gui_thread.start()
-        replay_buffer = REPLAY_BUFFER(10000)
-        for i in range(10):
-            if replay_buffer.get_size() == 10000:
-                break
-            print(i)
+        # gui_thread = threading.Thread(target=self.start_gui, args=(game_gui,))
+        # gui_thread.start()
+        replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
+        
+        game_counter = 0
+        for i in range(config.num_episodes):
+            if replay_buffer.get_size() == config.replay_buffer_size:
+                replay_buffer.save(f"training_data/hex_training_data_{game_counter}games")
+                replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
+                game_counter = 0
             if i % 2 == 0:
                 state = [HEX_BOARD(config.board_size), -1]
             else:
                 state = [HEX_BOARD(config.board_size), 1]
+            
             mcts = MonteCarloTreeSearch(state, anet, sm)
             while not sm.isGameOver(state):
                 mcts.search(random_move=True)
                 bestAction = mcts.best_action()
                 sm.makeMove(bestAction, state)
                 mcts.update_root(bestAction)
-
+            
+            game_counter += 1
+            print(f"Game {game_counter} finished")
             x_train, y_train = mcts.extract_training_data()
             replay_buffer.add(x_train, y_train)
-            print(replay_buffer.get_size())
-        replay_buffer.save("training_data/hex_training_data")
+            print(f"Replay buffer size: {replay_buffer.get_size()}")
+        replay_buffer.save(f"training_data/hex_training_data_{game_counter}games")
 
     def train_hex_actor(self):
         replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)

@@ -98,7 +98,6 @@ class MonteCarloTreeSearch:
         time_limit = config.time_limit
         start_time = time.time()
         for i in range(config.num_search_games):
-            print(f"Search game {i}")
             if config.time_limit > 0 and time.time() - start_time > time_limit:
                  break
             node = self.select_node()
