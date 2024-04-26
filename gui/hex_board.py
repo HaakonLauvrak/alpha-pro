@@ -37,6 +37,9 @@ class HEX_BOARD(BOARD):
         list_format = np.expand_dims(list_format, axis=0)
         return list_format
     
+    def get_state_list(self):
+        return [cell.state for cell in self.cells]
+    
     def get_ann_input(self, player):
         cell_states = [cell.state for cell in self.cells]
         ann_input = np.array([np.array([np.array([0, 0, 0]) for i in range(config.board_size)]) for i in range(config.board_size)])
