@@ -218,7 +218,6 @@ class PLAY():
             if replay_buffer.get_size() == config.replay_buffer_size:
                 replay_buffer.save(f"training_data/hex_training_data_{game_counter}games")
                 replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
-                game_counter = 0
             if i % 2 == 0:
                 state = [HEX_BOARD(config.board_size), -1]
             else:
