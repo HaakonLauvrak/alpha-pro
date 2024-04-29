@@ -29,10 +29,18 @@ class REPLAY_BUFFER():
     def save(self, filename):
         np.savez(filename, x_train=self.storage_x_train, y_train=self.storage_y_train)
 
-    def load(self, filename):
+    def load(self, filename, append=True):
         data = np.load(filename)
-        self.storage_x_train = data['x_train']
-        self.storage_y_train = data['y_train']
+        if append:
+            if len(self.storage_x_train) == 0:
+                self.storage_x_train = data['x_train']
+                self.storage_y_train = data['y_train']
+            else:
+                self.storage_x_train = np.concatenate((self.storage_x_train, data['x_train']), axis=0)
+                self.storage_y_train = np.concatenate((self.storage_y_train, data['y_train']), axis=0)
+        else:
+            self.storage_x_train = data['x_train']
+            self.storage_y_train = data['y_train']
 
     def get_size(self):
         return len(self.storage_x_train) 

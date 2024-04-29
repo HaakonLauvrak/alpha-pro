@@ -42,3 +42,7 @@ class HEX_BOARD_VISUALIZER():
     def close(self):
         plt.ioff()  # Turn off interactive mode
         plt.close(self.fig)
+
+
+    def save(self, filename):
+        self.fig.savefig(filename)

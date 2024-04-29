@@ -104,13 +104,13 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
                 move = random.choice(self.getLegalMoves(state))
         
         probabilities = actor.compute_move_probabilities(state[0].get_ann_input(state[1]))[0]
-        probabilites_normalized = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
-        probabilites_normalized = [x / sum(probabilites_normalized) for x in probabilites_normalized]
+        probabilities = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
 
         if sum(probabilities) == 0:
             move = random.choice(self.getLegalMoves(state))
         else:
-            if greedy: 
+            probabilites_normalized = [x / sum(probabilities) for x in probabilities]
+            if greedy:
                 greedy_index = np.argmax(probabilites_normalized)
                 move = all_moves[greedy_index]
             else:  
