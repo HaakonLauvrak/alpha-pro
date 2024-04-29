@@ -46,9 +46,7 @@ class ANET:
             
             model.add(keras.layers.Dense(
                 units=self.output_shape, 
-                activation="softmax",
-                ))
-            return model
+                activation="softmax"))
             
         #Traditional neural network
         else:
@@ -59,22 +57,25 @@ class ANET:
                     units=layer, activation=config.activation))
             model.add(keras.layers.Dense(
                 units=self.output_shape, activation="softmax"))
-            return model
-
-    def train_model(self, data) -> float:
-        # optimizer = keras.optimizers.Adam(learning_rate=config.learning_rate)
+        
         optimizer = keras.optimizers.get({
             'class_name': config.optimizer,
             'config': {'learning_rate': config.learning_rate}})
 
-        self.model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=[
+        model.compile(optimizer=optimizer, loss="categorical_crossentropy", metrics=[
                            "accuracy", "mae"])
+
+        return model
+
+    def train_model(self, data) -> float:
         history = self.model.fit(data["x_train"], data["y_train"],
-                       epochs=config.epochs, batch_size=config.batch_size, verbose=True, shuffle=True)
+                       epochs=config.epochs, batch_size=config.batch_size, verbose=1, shuffle=True)
         train_score = self.model.evaluate(
             data["x_train"], data["y_train"], verbose=0)
+        
         return train_score
 
+    
     def compute_move_probabilities(self, ann_input):
         """
         Given a state, return a list of probabilities for each move

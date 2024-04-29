@@ -1,5 +1,6 @@
 from asyncio import sleep
 import copy
+import os
 import random
 import threading
 import time
@@ -17,6 +18,7 @@ import config.config as config
 from actor.anet import ANET
 from tournaments.topp import Tournament
 import matplotlib.pyplot as plt
+import training_data
 
 class PLAY():
 
@@ -204,26 +206,29 @@ class PLAY():
             game_counter += 1
             print(f"Game {game_counter} finished")
             x_train, y_train = mcts.extract_training_data()
+            print(x_train, y_train)
             replay_buffer.add(x_train, y_train)
             print(f"Replay buffer size: {replay_buffer.get_size()}")
-        replay_buffer.save(f"training_data/hex_training_data_{game_counter}games")
+        replay_buffer.save(f"training_data/hex_training_data_{game_counter}games_AA")
 
     def train_hex_actor(self):
-        replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
-        replay_buffer.load("training_data/hex_training_data.npz")
+        replay_buffer = REPLAY_BUFFER(10000000)
+        print(replay_buffer.get_size())
+        replay_buffer.load(f"training_data/hex_260games_1000rollouts.npz")
+        print(replay_buffer.get_size())
         
         acc = []
         loss = []
         mae = []
-    
-        for i in range(1):
-            print(i)
-            anet = ANET("training_net")
-            training_score = anet.train_model(replay_buffer.get_all())
-            loss.append(training_score[0])
-            acc.append(training_score[1])
-            mae.append(training_score[2])
-        anet.save_model(10)
+
+        anet = ANET("training_net")
+
+        training_score = anet.train_model(replay_buffer.get_all())
+        loss.append(training_score[0])
+        acc.append(training_score[1])
+        mae.append(training_score[2])
+
+        anet.save_model(config.num_episodes)
 
         # Print avg accuracy, loss and mae
         print("Avg accuracy: ", sum(acc) / len(acc))

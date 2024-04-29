@@ -12,8 +12,8 @@ class REPLAY_BUFFER():
         if len(self.storage_x_train) + len(x_train) >= self.max_size:
             self.storage_x_train[0:(len(x_train) + len(self.storage_x_train)) - self.max_size] = []
             self.storage_y_train[0:(len(y_train) + len(self.storage_y_train)) - self.max_size] = []
-        self.storage_x_train += x_train
-        self.storage_y_train += y_train
+        self.storage_x_train.extend(x_train)
+        self.storage_y_train.extend(y_train)
 
     def get_all(self):
         training_data = {"x_train": np.array(self.storage_x_train), "y_train": np.array(self.storage_y_train)}
