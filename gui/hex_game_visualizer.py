@@ -13,18 +13,18 @@ class HEX_BOARD_VISUALIZER():
         for r in range(board_size):
             for c in range(board_size):
                 node = (r, c)
-                index = r * board_size + c
-                x, y = index // board_size, index % board_size
                 # Apply rotation transformation
-                x_rot = x * np.cos(np.radians(-45)) - y * np.sin(np.radians(-45))
-                y_rot = 1.5 * (x * np.sin(np.radians(-45)) + y * np.cos(np.radians(-45)))
+                x_rot = r * np.cos(np.radians(-135)) - c * np.sin(np.radians(-135))
+                y_rot = 1.5 * (r * np.sin(np.radians(-135)) + c * np.cos(np.radians(-135)))
                 self.pos[node] = (x_rot, y_rot)
                 if r > 0:
                     self.graph.add_edge((r - 1, c), node)
                 if c > 0:
                     self.graph.add_edge((r, c - 1), node)
-                if r > 0 and c > 0:
-                    self.graph.add_edge((r - 1, c - 1), (r, c))
+                if r > 0 and c < board_size - 1:
+                    self.graph.add_edge((r - 1, c + 1), (r, c))
+                if r < board_size - 1 and c > 0:
+                    self.graph.add_edge((r + 1, c - 1), (r, c))
 
         self.nodes = nx.draw_networkx_nodes(self.graph, self.pos, node_color='lightgray', node_size=300)
         nx.draw_networkx_edges(self.graph, self.pos, width=1.5, alpha=0.5)
@@ -33,9 +33,18 @@ class HEX_BOARD_VISUALIZER():
         plt.ion()  # Turn on interactive mode
         plt.show()
 
-    def update_board(self, board_state):
-        node_colors = ['red' if x == 1 else 'blue' if x == -1 else 'lightgray' for x in board_state]
-        self.nodes.set_color(node_colors)
+    def update_board(self, cells):
+        red_cell_cords = [cell.position for cell in cells if cell.state == 1]
+        blue_cell_cords = [cell.position for cell in cells if cell.state == -1]
+        for node in self.graph.nodes():
+            if node in red_cell_cords:
+                self.graph.nodes[node]['color'] = 'red'
+            elif node in blue_cell_cords:
+                self.graph.nodes[node]['color'] = 'blue'
+            else:
+                self.graph.nodes[node]['color'] = 'lightgray'
+        self.colors = [self.graph.nodes[node]['color'] for node in self.graph.nodes()]
+        self.nodes.set_color(self.colors)
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
 
