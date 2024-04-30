@@ -114,7 +114,7 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
                 greedy_index = np.argmax(probabilites_normalized)
                 move = all_moves[greedy_index]
             else:  
-                    move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
+                move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
         return move
     
     

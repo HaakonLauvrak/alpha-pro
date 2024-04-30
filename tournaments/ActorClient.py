@@ -13,10 +13,6 @@ import struct
 import sys
 import warnings
 
-from gui.hex_board import HEX_BOARD
-from game_logic.hex_state_manager import HEX_STATE_MANAGER
-import config.config as config
-
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 

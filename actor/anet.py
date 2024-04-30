@@ -3,6 +3,7 @@ from tensorflow import keras
 from typing import Dict, List, Any, Union
 import config.config as config
 import tensorflow as tf
+from tensorflow.keras.layers import Dropout
 
 
 class ANET:
@@ -31,6 +32,7 @@ class ANET:
                     padding="same",
                     strides=(1,1),
                     ))
+                model.add(keras.layers.BatchNormalization())
             model.add(keras.layers.Conv2D(
                 filters = 1, 
                 kernel_size = (1,1),
@@ -43,6 +45,7 @@ class ANET:
                     units=layer, 
                     activation=config.activation
                 ))
+                model.add(keras.layers.BatchNormalization())
             
             model.add(keras.layers.Dense(
                 units=self.output_shape, 

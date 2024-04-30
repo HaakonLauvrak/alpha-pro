@@ -34,14 +34,14 @@ class Tournament():
             for i in range(self.rounds):
                 print("Round: " + str(i + 1))
                 current_state = self.make_new_game()
-                visualizer.update_board(current_state[0].get_state_list())
+                visualizer.update_board(current_state[0].get_cells())
                 while not self.state_manager.isGameOver(current_state):
                     if current_state[1] == 1:
                         move = self.state_manager.findMove(current_state, player1)
                     else:
                         move = self.state_manager.findMove(current_state, player2)
                     self.state_manager.makeMove(move, current_state)
-                    visualizer.update_board(current_state[0].get_state_list())
+                    visualizer.update_board(current_state[0].get_cells())
                 if self.state_manager.getReward(current_state) == -1:
                     results[player1.name] += 1
                 else:

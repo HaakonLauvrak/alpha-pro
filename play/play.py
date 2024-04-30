@@ -6,7 +6,6 @@ import threading
 import time
 
 import numpy as np
-import pygame
 from actor.replay_buffer import REPLAY_BUFFER
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
 from gui.hex_board import HEX_BOARD
@@ -154,8 +153,10 @@ class PLAY():
         """Takes a list of four models and plays a tournament between them"""
 
         players = []
+        anet = ANET("Player0")
+        players.append(anet)
         for i in range(len(models)):
-            anet = ANET(f"Player{i}")
+            anet = ANET(f"Player{i + 1}")
             model = anet.load_model_by_name(models[i])
             anet.set_model(model)
             players.append(anet)
@@ -214,7 +215,7 @@ class PLAY():
     def train_hex_actor(self):
         replay_buffer = REPLAY_BUFFER(10000000)
         print(replay_buffer.get_size())
-        replay_buffer.load(f"training_data/hex_260games_1000rollouts.npz")
+        replay_buffer.load(f"training_data/hex_100games_10000rollouts.npz")
         print(replay_buffer.get_size())
         
         acc = []
@@ -222,7 +223,6 @@ class PLAY():
         mae = []
 
         anet = ANET("training_net")
-
         training_score = anet.train_model(replay_buffer.get_all())
         loss.append(training_score[0])
         acc.append(training_score[1])
@@ -254,3 +254,5 @@ class PLAY():
             f.write("Dimensions dense: " + str(config.dimensions_dense) + "\n")
             f.write("Activation: " + str(config.activation) + "\n")
             f.write("Optimizer: " + str(config.optimizer) + "\n" + "\n")
+
+            

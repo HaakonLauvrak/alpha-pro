@@ -262,3 +262,168 @@ Dimensions dense: [32]
 Activation: relu
 Optimizer: adam
 
+Avg accuracy: 0.018410975113511086
+Avg loss: 3.880784034729004
+Avg mae: 0.03799744322896004
+Learning rate: 0.01
+Epochs: 1
+Batch size: 1024
+Dimensions conv: [256, 128, 64, 64, 64]
+Dimensions dense: [512, 256, 128, 64]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.018382316455245018
+Avg loss: 3.8804898262023926
+Avg mae: 0.037996698170900345
+Learning rate: 0.001
+Epochs: 1
+Batch size: 128
+Dimensions conv: [64, 64, 64, 64, 64]
+Dimensions dense: [64]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.02813597582280636
+Avg loss: 3.7240304946899414
+Avg mae: 0.03742693364620209
+Learning rate: 0.0005
+Epochs: 1
+Batch size: 64
+Dimensions conv: [8, 8, 8]
+Dimensions dense: [64, 64, 64, 64]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.02947073243558407
+Avg loss: 3.727757692337036
+Avg mae: 0.03749794140458107
+Learning rate: 0.001
+Epochs: 1
+Batch size: 64
+Dimensions conv: [16, 16]
+Dimensions dense: [64, 64, 64, 64]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.028506098315119743
+Avg loss: 3.6462841033935547
+Avg mae: 0.0372626967728138
+Learning rate: 0.001
+Epochs: 1
+Batch size: 64
+Dimensions conv: [16]
+Dimensions dense: [512, 256, 128]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.02901829220354557
+Avg loss: 3.6415560245513916
+Avg mae: 0.03725646063685417
+Learning rate: 0.001
+Epochs: 1
+Batch size: 64
+Dimensions conv: [16, 16, 16]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.028903048485517502
+Avg loss: 3.580707550048828
+Avg mae: 0.037093691527843475
+Learning rate: 0.001
+Epochs: 10
+Batch size: 128
+Dimensions conv: [16, 8, 8]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.018410975113511086
+Avg loss: 3.88041090965271
+Avg mae: 0.03799934685230255
+Learning rate: 0.001
+Epochs: 20
+Batch size: 64
+Dimensions conv: [16, 8, 8]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.06455914676189423
+Avg loss: 3.502345085144043
+Avg mae: 0.036852214485406876
+Learning rate: 0.001
+Epochs: 120
+Batch size: 512
+Dimensions conv: [16, 8, 8]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.027964023873209953
+Avg loss: 3.620582103729248
+Avg mae: 0.0372111052274704
+Learning rate: 0.005
+Epochs: 10
+Batch size: 64
+Dimensions conv: [16, 8, 8]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.018410975113511086
+Avg loss: 3.8808324337005615
+Avg mae: 0.03799925372004509
+Learning rate: 0.0001
+Epochs: 5
+Batch size: 16
+Dimensions conv: [16, 8, 8]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.028638415038585663
+Avg loss: 3.6645102500915527
+Avg mae: 0.03718676418066025
+Learning rate: 0.005
+Epochs: 3
+Batch size: 2048
+Dimensions conv: [16, 16, 16, 16, 16]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.020080000162124634
+Avg loss: 4.63226318359375
+Avg mae: 0.025509363040328026
+Learning rate: 0.005
+Epochs: 3
+Batch size: 2048
+Dimensions conv: [64]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.07714000344276428
+Avg loss: 3.860086679458618
+Avg mae: 0.01675601489841938
+Learning rate: 0.005
+Epochs: 3
+Batch size: 2048
+Dimensions conv: [64]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+
+Avg accuracy: 0.49923640489578247
+Avg loss: 3.2037668228149414
+Avg mae: 0.009940413758158684
+Learning rate: 0.005
+Epochs: 3
+Batch size: 128
+Dimensions conv: [64]
+Dimensions dense: [256, 512, 256]
+Activation: relu
+Optimizer: adam
+

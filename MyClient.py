@@ -18,7 +18,7 @@ class MyClient(ActorClient.ActorClient):
         # Implement your own logic here
         self.board = HEX_BOARD(7)
         self.actor = ANET("oht")
-        model = self.actor.load_model("hex", 7, 20, 5000)
+        model = self.actor.load_model("hex", 7, 1000, 100000)
         self.actor.set_model(model)
         state = state[1:]
         for i in range(len(state)):
