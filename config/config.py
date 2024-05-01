@@ -9,8 +9,8 @@ nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 20
-num_search_games = 1000
+num_episodes = 100
+num_search_games = 100
 time_limit = 0 #set to 0 for no time limit
 c = 1.3
 epsilon = 1
@@ -24,12 +24,12 @@ batch_size = 128
 dimensions_conv = [64] #hex
 dimensions_dense = [256, 512, 256] #hex
 dimensions_nim = [64, 32, 16, 8] #nim
-activation = "relu"
+activation = "relu" #linear, sigmoid, tanh, relu
 
 #The optimizer in the ANET, with (at least) the following options all available: 
 #Adagrad, Stochastic Gradient Descent
 #  (SGD), RMSProp, and Adam.
-optimizer = "adam"
+optimizer = "adam" #adagrad, sgd, rmsprop, adam
 
 #The number (M) of ANETs to be cached in preparation for a TOPP. These should be cached, starting with an untrained net prior to episode 1, at a fixed interval throughout the training episodes.
 M = 4

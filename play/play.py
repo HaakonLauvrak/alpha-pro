@@ -25,7 +25,9 @@ class PLAY():
         pass
 
     def play_nim_mcts(self): 
-        """Play a game of NIM using MCTS without ANET"""
+        """
+        Play a game of NIM using MCTS without ANET
+        """
         board = NIM_BOARD()
         board.set_state(config.nim_N)
         state = [board, 1]
@@ -42,7 +44,9 @@ class PLAY():
 
 
     def play_hex_mcts(self):
-        """Play a game of HEX using MCTS without ANET"""
+        """
+        Play a game of HEX using MCTS without ANET
+        """
         sm = HEX_STATE_MANAGER()
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
@@ -63,7 +67,9 @@ class PLAY():
         visualizer.close()
 
     def search_and_train_hex(self):
-        """Play a game of HEX using MCTS with ANET"""
+        """
+        Play a game of HEX using MCTS with ANET
+        """
         sm = HEX_STATE_MANAGER()
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
@@ -130,6 +136,9 @@ class PLAY():
     
 
     def search_and_train_nim(self):
+        """
+        Play a game of Nim using MCTS with ANET
+        """
         sm = NIM_STATE_MANAGER()
         anet = ANET("nim")
         board = NIM_BOARD()
@@ -157,8 +166,9 @@ class PLAY():
         print("Done")
 
     def topp(self, models: list, rounds):
-        """Takes a list of four models and plays a tournament between them"""
-
+        """
+        Takes a list of four models and plays a round robin tournament between them
+        """
         players = []
         anet = ANET("Player0")
         players.append(anet)
@@ -188,7 +198,9 @@ class PLAY():
         plt.show()
 
     def generate_training_data_hex(self):
-        """Generates training data for HEX using MCTS without anet. Saves data to file."""
+        """
+        Generates training data for HEX using MCTS without anet. Saves data to file.
+        """
         sm = HEX_STATE_MANAGER()
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
@@ -219,6 +231,9 @@ class PLAY():
         replay_buffer.save(f"training_data/hex_training_data_{game_counter}games_AA")
 
     def train_hex_actor(self):
+        """
+        Trains the actor network for HEX using previously generated training data.
+        """
         replay_buffer = REPLAY_BUFFER(10000000)
         replay_buffer.load(f"training_data/hex_100games_10000rollouts.npz")
         print(replay_buffer.get_size())
