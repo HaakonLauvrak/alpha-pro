@@ -19,7 +19,7 @@ replay_buffer_size = 1000000
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
 learning_rate = 0.005
-epochs = 50
+epochs = 20
 batch_size = 128
 dimensions_conv = [32] #hex
 dimensions_dense = [128, 256, 128] #hex
@@ -34,5 +34,5 @@ optimizer = "adam" #adagrad, sgd, rmsprop, adam
 #The number (M) of ANETs to be cached in preparation for a TOPP. 
 M = 4
 #The number of games (G) to be played between each pair of ANETs in a TOPP.
-G = 50
+G = 30
 

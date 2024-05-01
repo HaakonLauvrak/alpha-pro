@@ -137,8 +137,6 @@ class PLAY():
         rounds = config.G
         players = []
 
-        
-
         for i in range(len(models)):
             anet = ANET(f"Player{i + 1}")
             model = anet.load_model_by_name(models[i])
@@ -204,46 +202,63 @@ class PLAY():
         Trains the actor network for HEX using previously generated training data.
         """
         replay_buffer = REPLAY_BUFFER(10000000)
-        replay_buffer.load(f"training_data/hex_100games_10000rollouts.npz")
+        replay_buffer.load(f"training_data/hex4_training_data_67games_AA.npz")
+        anet = ANET("training_net_67")
+        config.epochs = 1
+        anet.train_model(replay_buffer.get_all())
+        anet.save_model(67)
 
-        anet = ANET("training_net")
+        replay_buffer.load(f"training_data/hex4_training_data_100games_AA.npz")
+        anet = ANET("training_net_100")
+        config.epochs = 10
+        anet.load_model_by_name("hex_4_67ep_1000searches")
         anet.train_model(replay_buffer.get_all())
         anet.save_model(100)
+
+        replay_buffer.load(f"training_data/hex4_training_data_100games_A.npz")
+        anet = ANET("training_net_200")
+        config.epochs = 20
+        anet.load_model_by_name("hex_4_100ep_1000searches")
+        anet.train_model(replay_buffer.get_all())
+        anet.save_model(200)
+
+        anet = ANET("training_net_0")
+        anet.save_model(0)
         
-        acc = []
-        loss = []
-        mae = []
+        # acc = []
+        # loss = []
+        # mae = []
 
-        training_score = anet.train_model(replay_buffer.get_all())
-        loss.append(training_score[0])
-        acc.append(training_score[1])
-        mae.append(training_score[2])
+        # training_score = anet.train_model(replay_buffer.get_all())
+        # loss.append(training_score[0])
+        # acc.append(training_score[1])
+        # mae.append(training_score[2])
 
-        anet.save_model(config.num_episodes)
+        # anet.save_model(config.num_episodes)
 
-        # Print avg accuracy, loss and mae
-        print("Avg accuracy: ", sum(acc) / len(acc))
-        print("Avg loss: ", sum(loss) / len(loss))
-        print("Avg mae: ", sum(mae) / len(mae))
-        print("Learning rate: ", config.learning_rate)
-        print("Epochs: ", config.epochs)
-        print("Batch size: ", config.batch_size)
-        print("Dimensions conv: ", config.dimensions_conv)
-        print("Dimensions dense: ", config.dimensions_dense)
-        print("Activation: ", config.activation)
-        print("Optimizer: ", config.optimizer)
+        # # Print avg accuracy, loss and mae
+        # print("Avg accuracy: ", sum(acc) / len(acc))
+        # print("Avg loss: ", sum(loss) / len(loss))
+        # print("Avg mae: ", sum(mae) / len(mae))
+        # print("Learning rate: ", config.learning_rate)
+        # print("Epochs: ", config.epochs)
+        # print("Batch size: ", config.batch_size)
+        # print("Dimensions conv: ", config.dimensions_conv)
+        # print("Dimensions dense: ", config.dimensions_dense)
+        # print("Activation: ", config.activation)
+        # print("Optimizer: ", config.optimizer)
 
-        #Save results to file
-        with open("training_results_hex.txt", "a") as f:
-            f.write("Avg accuracy: " + str(sum(acc) / len(acc)) + "\n")
-            f.write("Avg loss: " + str(sum(loss) / len(loss)) + "\n")
-            f.write("Avg mae: " + str(sum(mae) / len(mae)) + "\n")
-            f.write("Learning rate: " + str(config.learning_rate) + "\n")
-            f.write("Epochs: " + str(config.epochs) + "\n")
-            f.write("Batch size: " + str(config.batch_size) + "\n")
-            f.write("Dimensions conv: " + str(config.dimensions_conv) + "\n")
-            f.write("Dimensions dense: " + str(config.dimensions_dense) + "\n")
-            f.write("Activation: " + str(config.activation) + "\n")
-            f.write("Optimizer: " + str(config.optimizer) + "\n" + "\n")
+        # #Save results to file
+        # with open("training_results_hex.txt", "a") as f:
+        #     f.write("Avg accuracy: " + str(sum(acc) / len(acc)) + "\n")
+        #     f.write("Avg loss: " + str(sum(loss) / len(loss)) + "\n")
+        #     f.write("Avg mae: " + str(sum(mae) / len(mae)) + "\n")
+        #     f.write("Learning rate: " + str(config.learning_rate) + "\n")
+        #     f.write("Epochs: " + str(config.epochs) + "\n")
+        #     f.write("Batch size: " + str(config.batch_size) + "\n")
+        #     f.write("Dimensions conv: " + str(config.dimensions_conv) + "\n")
+        #     f.write("Dimensions dense: " + str(config.dimensions_dense) + "\n")
+        #     f.write("Activation: " + str(config.activation) + "\n")
+        #     f.write("Optimizer: " + str(config.optimizer) + "\n" + "\n")
 
             

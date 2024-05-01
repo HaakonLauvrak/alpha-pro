@@ -4,6 +4,7 @@ import random
 import numpy as np
 import config.config as config
 import time
+from anytree import Node
 
 
 class MCTSNode(Node):
