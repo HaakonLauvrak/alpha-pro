@@ -1,23 +1,14 @@
-from asyncio import sleep
-import copy
-import os
-import random
-import threading
-import time
-
-import numpy as np
 from actor.replay_buffer import REPLAY_BUFFER
 from game_logic.nim_state_manager import NIM_STATE_MANAGER
 from gui.hex_board import HEX_BOARD
 from gui.hex_game_visualizer import HEX_BOARD_VISUALIZER
 from game_logic.hex_state_manager import HEX_STATE_MANAGER
 from gui.nim_board import NIM_BOARD
-from mcts.mcts import MCTSNode, MonteCarloTreeSearch
+from mcts.mcts import MonteCarloTreeSearch
 import config.config as config
 from actor.anet import ANET
 from tournaments.topp import Tournament
 import matplotlib.pyplot as plt
-import training_data
 
 class PLAY():
 
@@ -72,15 +63,15 @@ class PLAY():
         Play a game of HEX using MCTS with ANET
         """
         sm = HEX_STATE_MANAGER(0)
-        anet = ANET("training_net")
+        anet = ANET("0 games")
+        anet.save_model(0)
         state = [HEX_BOARD(config.board_size), 1]
         mcts = MonteCarloTreeSearch(state, anet, sm)
-        acc = []
-        loss = []
-        mae = []
+        
         visualizer = HEX_BOARD_VISUALIZER(config.board_size)
         visualizer.update_board(state[0].get_cells())
         replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
+        
         for i in range(config.num_episodes + 1):
             print(i)
             while not sm.isGameOver(state):
@@ -91,46 +82,16 @@ class PLAY():
                 replay_buffer.add(x_train, y_train)
                 mcts.update_root(bestAction)
                 visualizer.update_board(state[0].get_cells())
+            
             sm.increment_episode() #must be done here to avoid incrementing episode when simulations reach end state.
-            # training_score = (anet.train_model(replay_buffer.get_all()))
-            # loss.append(training_score[0])
-            # acc.append(training_score[1])
-            # mae.append(training_score[2])
             state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
            
-            if i == 0 or (i + 1) % (config.num_episodes // config.M) == 0:
+            if (i + 1) % (config.num_episodes // config.M) == 0:
+                anet = ANET(f"{i + 1} games")
                 anet.train_model(replay_buffer.get_all())
-                anet.save_model(i)
-        print(acc)
-
-        fig = plt.figure()
-
-        # Add subplots
-        ax1 = fig.add_subplot(311)
-        ax1.plot(acc, label='Accuracy')
-        ax1.set_title('Model Accuracy')
-        ax1.set_ylabel('Accuracy')
-        ax1.legend(loc='upper left')
-
-        ax2 = fig.add_subplot(312)
-        ax2.plot(loss, label='Loss', color='orange')
-        ax2.set_title('Model Loss')
-        ax2.set_ylabel('Loss')
-        ax2.legend(loc='upper left')
-
-        ax3 = fig.add_subplot(313)
-        ax3.plot(mae, label='Mean Absolute Error', color='green')
-        ax3.set_title('Mean Absolute Error')
-        ax3.set_ylabel('MAE')
-        ax3.set_xlabel('Games')
-        ax3.legend(loc='upper left')
-
-        plt.tight_layout()
-
-        # Show the figure
-        plt.show()
+                anet.save_model(i+1)
 
         print("Done")
     

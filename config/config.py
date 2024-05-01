@@ -2,7 +2,7 @@
 game = "hex" 
 
 #The size (k) of the k x k Hex board, where 3 ≤ k ≤ 10.
-board_size = 7
+board_size = 4
 
 #The number of initial stones N in nim and the number of stones that can be removed each turn K
 nim_N = 8
@@ -14,12 +14,12 @@ num_search_games = 1000
 time_limit = 0 #set to 0 for no time limit
 c = 1.3
 epsilon = 1
-replay_buffer_size = 100000
+replay_buffer_size = 1000000
 
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
 learning_rate = 0.005
-epochs = 20
+epochs = 50
 batch_size = 128
 dimensions_conv = [32] #hex
 dimensions_dense = [128, 256, 128] #hex
@@ -34,5 +34,5 @@ optimizer = "adam" #adagrad, sgd, rmsprop, adam
 #The number (M) of ANETs to be cached in preparation for a TOPP. 
 M = 4
 #The number of games (G) to be played between each pair of ANETs in a TOPP.
-G = 20
+G = 50
 

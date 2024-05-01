@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-import random
 import config.config as config
-import numpy as np
 
 class STATE_MANAGER(ABC):
     """

@@ -1,10 +1,8 @@
-import numpy as np
 from game_logic.hex_state_manager import HEX_STATE_MANAGER
 from gui.hex_game_visualizer import HEX_BOARD_VISUALIZER
 from tournaments import ActorClient
 from gui.hex_board import HEX_BOARD
 import config.config as config
-import random 
 from actor.anet import ANET 
 
 
