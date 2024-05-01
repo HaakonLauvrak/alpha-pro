@@ -8,11 +8,11 @@ class STATE_MANAGER(ABC):
     Abstract base class for managing the game state.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, epsilon=config.epsilon) -> None:
         """
         Initializes the STATE_MANAGER object.
         """
-        self.epsilon = config.epsilon
+        self.epsilon = epsilon
         self.current_episode = 0
         self.num_episodes = config.num_episodes
 

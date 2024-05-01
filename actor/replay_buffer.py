@@ -28,8 +28,10 @@ class REPLAY_BUFFER():
         - y_train (list or array-like): The predictions.
         """
         if len(self.storage_x_train) + len(x_train) >= self.max_size:
-            self.storage_x_train[0:(len(x_train) + len(self.storage_x_train)) - self.max_size] = []
-            self.storage_y_train[0:(len(y_train) + len(self.storage_y_train)) - self.max_size] = []
+            self.storage_x_train = self.storage_x_train[1:]
+            self.storage_y_train = self.storage_y_train[1:]
+            # self.storage_x_train[0:(len(x_train) + len(self.storage_x_train)) - self.max_size] = []
+            # self.storage_y_train[0:(len(y_train) + len(self.storage_y_train)) - self.max_size] = []
         self.storage_x_train.append(x_train)
         self.storage_y_train.append(y_train)
 

@@ -12,8 +12,8 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
     Manages the state and logic of a hex game.
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, epsilon=config.epsilon) -> None:
+        super().__init__(epsilon=epsilon)
 
     def getLegalMoves(self, state) -> list:
         """
@@ -167,11 +167,10 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
             The move to be made.
         """
         if random_move:
+            print("Random move")
             return random.choice(self.getLegalMoves(state))
-
-        self.epsilon = 1 - self.current_episode / config.num_episodes
-
-        if not greedy and self.epsilon > random.random():
+        
+        if not greedy and (self.epsilon - self.current_episode / config.num_episodes) > random.random():
             return random.choice(self.getLegalMoves(state))
 
         all_moves = self.find_all_moves()
