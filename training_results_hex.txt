@@ -427,3 +427,14 @@ Dimensions dense: [256, 512, 256]
 Activation: relu
 Optimizer: adam
 
+Avg accuracy: 0.3002309501171112
+Avg loss: 2.5793230533599854
+Avg mae: 0.06388960033655167
+Learning rate: 0.005
+Epochs: 5
+Batch size: 128
+Dimensions conv: [32]
+Dimensions dense: [128, 256, 128]
+Activation: relu
+Optimizer: adam
+
