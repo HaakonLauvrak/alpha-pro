@@ -9,8 +9,8 @@ nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 20
-num_search_games = 1000
+num_episodes = 10
+num_search_games = 100
 time_limit = 0 #set to 0 for no time limit
 c = 1.3
 epsilon = 1
@@ -19,10 +19,10 @@ replay_buffer_size = 1000000
 #In the ANET, the learning rate, the number of hidden layers and neurons per layer, along 
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
 learning_rate = 0.005
-epochs = 3
+epochs = 5
 batch_size = 128
-dimensions_conv = [64] #hex
-dimensions_dense = [256, 512, 256] #hex
+dimensions_conv = [32] #hex
+dimensions_dense = [128, 256, 128] #hex
 dimensions_nim = [64, 32, 16, 8] #nim
 activation = "relu"
 

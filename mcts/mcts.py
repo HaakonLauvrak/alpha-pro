@@ -124,27 +124,48 @@ class MonteCarloTreeSearch:
         original_root = self.root
         while self.root.parent:
             self.root = self.root.parent
-        training_data = {"x_train": [], "y_train": []}
-        node_queue = [self.root]
-        # Traverse the tree
-        while len(node_queue) > 0:
-            node = node_queue.pop(0)
-            if node.children:
-                visits = {}
-                for move in self.all_moves:
-                    visits[move] = 0
-                for child in node.children:
-                    visits[child.action] = child.visits
-                    if child.children:
-                        node_queue.append(child)
-                visits_list = np.array(list(visits.values()))
-                sum_visits = sum(visits_list)
-                if (sum_visits > 0):
-                    visits_list = [x / sum_visits for x in visits_list]
-                    x_train = node.state[0].get_ann_input(node.state[1])
-                    training_data["x_train"].append(x_train[0])
-                    training_data["y_train"].append(visits_list)
+        if self.root.children:
+            visits = {}
+            for move in self.all_moves:
+                visits[move] = 0
+            for child in self.root.children:
+                visits[child.action] = child.visits
+            visits_list = np.array(list(visits.values()))
+            sum_visits = sum(visits_list)
+            visits_list = [x / sum_visits for x in visits_list]
+            x_train = self.root.state[0].get_ann_input(self.root.state[1])[0]
         self.root = original_root
-        return training_data["x_train"], training_data["y_train"]
+        print(x_train)
+        print(visits_list)
+        exit()
+        return x_train, visits_list
+
+
+    # def extract_training_data(self):
+    #     original_root = self.root
+    #     while self.root.parent:
+    #         self.root = self.root.parent
+    #     training_data = {"x_train": [], "y_train": []}
+    #     node_queue = [self.root]
+    #     # Traverse the tree
+    #     while len(node_queue) > 0:
+    #         node = node_queue.pop(0)
+    #         if node.children:
+    #             visits = {}
+    #             for move in self.all_moves:
+    #                 visits[move] = 0
+    #             for child in node.children:
+    #                 visits[child.action] = child.visits
+    #                 if child.children:
+    #                     node_queue.append(child)
+    #             visits_list = np.array(list(visits.values()))
+    #             sum_visits = sum(visits_list)
+    #             if (sum_visits > 0):
+    #                 visits_list = [x / sum_visits for x in visits_list]
+    #                 x_train = node.state[0].get_ann_input(node.state[1])
+    #                 training_data["x_train"].append(x_train[0])
+    #                 training_data["y_train"].append(visits_list)
+    #     self.root = original_root
+    #     return training_data["x_train"], training_data["y_train"]
 
 
