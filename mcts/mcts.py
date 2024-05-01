@@ -239,9 +239,6 @@ class MonteCarloTreeSearch:
             visits_list = [x / sum_visits for x in visits_list]
             x_train = self.root.state[0].get_ann_input(self.root.state[1])[0]
         self.root = original_root
-        print(x_train)
-        print(visits_list)
-        exit()
         return x_train, visits_list
 
 
