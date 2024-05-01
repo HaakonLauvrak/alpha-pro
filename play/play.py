@@ -35,11 +35,12 @@ class PLAY():
         print(f"N = {config.nim_N}, K = {config.nim_K}")
         mcts = MonteCarloTreeSearch(state, ann, sm)
         while not sm.isGameOver(state):
-            bestAction = mcts.search()
+            bestAction = mcts.search(random_move=True)
             sm.makeMove(bestAction, state)
             print(f"Player {-state[1]} took: ", bestAction)
         print(f"Player {-state[1]} wins!")
-    
+
+        
     def play_hex_mcts(self):
         """Play a game of HEX using MCTS without ANET"""
         sm = HEX_STATE_MANAGER()
