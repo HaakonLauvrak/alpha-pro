@@ -39,6 +39,7 @@ class PLAY():
         while not sm.isGameOver(state):
             bestAction = mcts.search(random_move=True)
             sm.makeMove(bestAction, state)
+            mcts.update_root(bestAction)
             print(f"Player {-state[1]} took: ", bestAction)
         print(f"Player {-state[1]} wins!")
 
@@ -145,18 +146,22 @@ class PLAY():
         board.set_state(config.nim_N)
         state = [board, 1]
         mcts = MonteCarloTreeSearch(state, anet, sm)
+        rbuf = REPLAY_BUFFER(config.replay_buffer_size)
         acc = []
         for i in range(config.num_episodes):
-            print(i)
+            print("Game ", i)
             while not sm.isGameOver(state):
                 mcts.search()
                 bestAction = mcts.best_action()
+                print("Stones left: ", state[0].get_state())
                 sm.makeMove(bestAction, state)
+                print(f"Player {-state[1]} took: ", bestAction)
                 mcts.update_root(bestAction)
+            print(f"Player {-state[1]} wins!")
             sm.increment_episode()
-
-            training_data = mcts.extract_training_data()
-            acc.append(anet.train_model(training_data))
+            x_train, y_train = mcts.extract_training_data()
+            rbuf.add(x_train, y_train)
+            acc.append(anet.train_model(rbuf.get_all()))
             board = NIM_BOARD()
             board.set_state(config.nim_N)
             state = [board, 1]
