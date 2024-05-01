@@ -2,17 +2,17 @@
 game = "hex" 
 
 #The size (k) of the k x k Hex board, where 3 ≤ k ≤ 10.
-board_size = 7
+board_size = 4
 
 #The number of initial stones N in nim and the number of stones that can be removed each turn K
 nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 1000
-num_search_games = 100000
-time_limit = 0 #set to 0 for no time limit
-c = 1
+num_episodes = 1
+num_search_games = 100
+time_limit = 30 #set to 0 for no time limit
+c = 1.3
 epsilon = 1
 replay_buffer_size = 1000000
 

@@ -40,7 +40,7 @@ class PLAY():
             print(f"Player {-state[1]} took: ", bestAction)
         print(f"Player {-state[1]} wins!")
 
-        
+
     def play_hex_mcts(self):
         """Play a game of HEX using MCTS without ANET"""
         sm = HEX_STATE_MANAGER()
@@ -48,14 +48,21 @@ class PLAY():
         state = [HEX_BOARD(config.board_size), 1]
         mcts = MonteCarloTreeSearch(state, anet, sm)
         visualizer = HEX_BOARD_VISUALIZER(config.board_size)
-        visualizer.update_board(state[0].get_state_list())
+        visualizer.update_board(state[0].get_cells())
         while not sm.isGameOver(state):
             bestAction = mcts.search()
             sm.makeMove(bestAction, state)
             mcts.update_root(bestAction)
-            visualizer.update_board(state[0].get_state_list())
+            visualizer.update_board(state[0].get_cells())
             print(f"Player {state[1]} took: ", bestAction)
         print(f"Player {state[1] * -1} wins!")
+        x_train, y_train = mcts.extract_training_data()
+        print(x_train[0])
+        print(y_train[0])
+        print(x_train[20])
+        print(y_train[20])
+        print(x_train[-1])
+        print(y_train[-1])
         visualizer.close()
 
     def search_and_train_hex(self):

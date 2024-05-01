@@ -68,6 +68,8 @@ class MonteCarloTreeSearch:
         max_score = -np.inf
         best_child = []
         for child in node.children:
+            if child.visits == 0:
+                return child
             score = MonteCarloTreeSearch.Q(
                 child, node.state[1]) + MonteCarloTreeSearch.u(node, child)
             if score == max_score:
@@ -81,11 +83,10 @@ class MonteCarloTreeSearch:
     def Q(a, player):
         # Return the action value for a given state and action
         if a.visits == 0:
-            return 0
+            return np.inf
         else:
             if player == 1:
                 return (a.win_score_1 - a.win_score_2) / a.visits
-
             else:
                 return (a.win_score_2 - a.win_score_1) / a.visits
 
