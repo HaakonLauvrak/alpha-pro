@@ -4,23 +4,37 @@ import config.config as config
 import numpy as np
 
 class STATE_MANAGER(ABC):
-    
+    """
+    Abstract base class for managing the game state.
+    """
+
     def __init__(self) -> None:
+        """
+        Initializes the STATE_MANAGER object.
+        """
         self.epsilon = config.epsilon
         self.current_episode = 0
         self.num_episodes = config.num_episodes
 
     def setState(self, state) -> None:
+        """
+        Sets the current state of the game.
+
+        Parameters:
+        - state: The current state of the game.
+        """
         self.state = state
     
     def increment_episode(self):
+        """
+        Increments the episode counter.
+        """
         self.current_episode += 1
 
     @abstractmethod
     def getLegalMoves(self, state):
         pass
 
-    # Modify your state based on the move and change the player to move next
     @abstractmethod
     def makeMove(self, move):
         pass
@@ -35,7 +49,7 @@ class STATE_MANAGER(ABC):
 
     @abstractmethod
     def find_all_moves(self):
-        pass
+       pass
 
     @abstractmethod
     def findMove(self, state, actor):

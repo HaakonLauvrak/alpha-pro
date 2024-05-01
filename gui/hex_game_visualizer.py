@@ -3,7 +3,17 @@ import networkx as nx
 import numpy as np
 
 class HEX_BOARD_VISUALIZER():
+    """
+    A class for visualizing a hex board game using matplotlib and networkx.
+    """
+
     def __init__(self, board_size):
+        """
+        Initializes the HEX_BOARD_VISUALIZER class.
+
+        Args:
+            board_size (int): The size of the hex board.
+        """
         self.board_size = board_size
         self.graph = nx.Graph()
         self.pos = {}  # Position dictionary for nodes
@@ -34,6 +44,12 @@ class HEX_BOARD_VISUALIZER():
         plt.show()
 
     def update_board(self, cells):
+        """
+        Updates the board visualization based on the state of the cells.
+
+        Args:
+            cells (list): The list of cells representing the state of the board.
+        """
         red_cell_cords = [cell.position for cell in cells if cell.state == 1]
         blue_cell_cords = [cell.position for cell in cells if cell.state == -1]
         for node in self.graph.nodes():
@@ -49,9 +65,17 @@ class HEX_BOARD_VISUALIZER():
         self.fig.canvas.flush_events()
 
     def close(self):
-        plt.ioff()  # Turn off interactive mode
+        """
+        Closes the plot and turns off interactive mode.
+        """
+        plt.ioff()
         plt.close(self.fig)
 
-
     def save(self, filename):
+        """
+        Saves the plot as an image file.
+
+        Args:
+            filename (str): The filename of the image file to be saved.
+        """
         self.fig.savefig(filename)

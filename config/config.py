@@ -24,12 +24,12 @@ batch_size = 128
 dimensions_conv = [32] #hex
 dimensions_dense = [128, 256, 128] #hex
 dimensions_nim = [64, 32, 16, 8] #nim
-activation = "relu"
+activation = "relu" #linear, sigmoid, tanh, relu
 
 #The optimizer in the ANET, with (at least) the following options all available: 
 #Adagrad, Stochastic Gradient Descent
 #  (SGD), RMSProp, and Adam.
-optimizer = "adam"
+optimizer = "adam" #adagrad, sgd, rmsprop, adam
 
 #The number (M) of ANETs to be cached in preparation for a TOPP. These should be cached, starting with an untrained net prior to episode 1, at a fixed interval throughout the training episodes.
 M = 4

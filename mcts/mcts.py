@@ -12,8 +12,20 @@ import time
 
 
 class MCTSNode(Node):
+    """
+    Represents a node in the Monte Carlo Tree Search (MCTS) algorithm.
+    """
+
     def __init__(self, state, parent=None, action=None, visits=0):
-        # name = str(state[0])
+        """
+        Initializes a new instance of the MCTSNode class.
+
+        Args:
+            state: The state of the node.
+            parent: The parent node of this node.
+            action: The action taken to reach this node.
+            visits: The number of times this node has been visited.
+        """
         super().__init__(".", parent=parent)
         self.state = state
         self.action = action
@@ -22,34 +34,77 @@ class MCTSNode(Node):
         self.draw = 0
         self.visits = visits
 
+
 class MonteCarloTreeSearch:
+    """
+    Represents the Monte Carlo Tree Search (MCTS) algorithm.
+
+    Attributes:
+        root: The root node of the search tree.
+        actor_network: The actor network used for move selection.
+        state_manager: The state manager for the game.
+        all_moves: A list of all possible moves in the game.
+    """
+
     def __init__(self, root_state, actor_network, state_manager):
-        self.root = MCTSNode(copy.deepcopy(root_state), visits=1) #Set root visits to 1 to avoid log of zero
+        """
+        Initializes a new instance of the MonteCarloTreeSearch class.
+
+        Args:
+            root_state: The initial state of the game.
+            actor_network: The actor network used for move selection.
+            state_manager: The state manager for the game.
+        """
+        self.root = MCTSNode(copy.deepcopy(root_state), visits=1)
         self.actor_network = actor_network
         self.state_manager = state_manager
         self.all_moves = self.state_manager.find_all_moves()
 
     def select_node(self) -> MCTSNode:
+        """
+        Selects the next node to explore in the search tree.
+
+        Returns:
+            The selected node.
+        """
         node = self.root
         while node.children:
             node = self.tree_policy(node)
         return node
 
     def expand_node(self, node):
+        """
+        Expands a node by adding child nodes for all legal moves.
+
+        Args:
+            node: The node to expand.
+        """
         legal_moves = self.state_manager.getLegalMoves(node.state)
         for move in legal_moves:
             new_state = self.state_manager.simulateMove(node.state, self.actor_network, move=move)
             MCTSNode(new_state, parent=node, action=move)
 
     def rollout(self, node, random_move=False):
-        # Simulate a game from the current state
+        """
+        Simulates a game from the current state until a terminal state is reached.
+
+        Args:
+            node: The node to start the rollout from.
+            random_move: Whether to select moves randomly during the rollout.
+        """
         current_state = node.state
         while not self.state_manager.isGameOver(current_state):
             current_state = self.state_manager.simulateMove(current_state, self.actor_network, random_move=random_move)
         self.backpropagate(node, self.state_manager.getReward(current_state))
 
     def backpropagate(self, node, reward):
-        # Update the nodes in the path to the root with the reward
+        """
+        Updates the nodes in the path to the root with the reward.
+
+        Args:
+            node: The node to start the backpropagation from.
+            reward: The reward obtained from the terminal state.
+        """
         while node:
             node.visits += 1
             if reward == 1:
@@ -61,10 +116,24 @@ class MonteCarloTreeSearch:
             node = node.parent
 
     def best_action(self):
-        return sorted(self.root.children, key=lambda c: c.visits, reverse=True)[0].action 
+        """
+        Returns the best action to take based on the search results.
+
+        Returns:
+            The best action to take.
+        """
+        return sorted(self.root.children, key=lambda c: c.visits, reverse=True)[0].action
 
     def tree_policy(self, node):
-        # Return the best child node according to the UCT policy
+        """
+        Selects the best child node according to the UCT policy.
+
+        Args:
+            node: The node to select the best child from.
+
+        Returns:
+            The best child node.
+        """
         max_score = -np.inf
         best_child = []
         for child in node.children:
@@ -81,7 +150,13 @@ class MonteCarloTreeSearch:
 
     @staticmethod
     def Q(a, player):
-        # Return the action value for a given state and action
+        """
+        Returns the action value for a given state and action.
+
+        Args:
+            a: The node representing the state and action.
+            player: The player for whom to calculate the action value.
+        """
         if a.visits == 0:
             return np.inf
         else:
@@ -92,25 +167,49 @@ class MonteCarloTreeSearch:
 
     @staticmethod
     def u(s, a):
-        # Return the UCT exploration value for a given state and action
+        """
+        Returns the UCT exploration value for a given state and action.
+
+        Args:
+            s: The parent node representing the state.
+            a: The child node representing the action.
+        """
         if (s.visits) / (1 + a.visits) <= 1:
             return 0
         return config.c * np.sqrt(math.log((s.visits) / (1 + a.visits)))
- 
+
     def search(self, random_move=False):
+        """
+        Performs the Monte Carlo Tree Search.
+
+        Args:
+            random_move: Whether to select moves randomly during the search.
+
+        Returns:
+            The best action to take based on the search results.
+        """
         time_limit = config.time_limit
         start_time = time.time()
         for i in range(config.num_search_games):
             if config.time_limit > 0 and time.time() - start_time > time_limit:
-                 break
+                break
             node = self.select_node()
-            if not self.state_manager.isGameOver(node.state):  
+            if not self.state_manager.isGameOver(node.state):
                 self.expand_node(node)
                 node = random.choice(node.children)
             self.rollout(node, random_move=random_move)
         return self.best_action()
 
     def update_root(self, move):
+        """
+        Updates the root node based on the selected move.
+
+        Args:
+            move: The move to update the root node with.
+
+        Raises:
+            ValueError: If the move is invalid.
+        """
         move_found = False
         for child in self.root.children:
             if child.action == move:
@@ -121,6 +220,11 @@ class MonteCarloTreeSearch:
             raise ValueError(f"Invalid move: {move}")
 
     def extract_training_data(self):
+        """
+        Extracts training data from the search tree.
+
+        Returns: Input data and predicted probabilities for training the actor network.
+        """
         original_root = self.root
         while self.root.parent:
             self.root = self.root.parent
