@@ -47,22 +47,19 @@ class PLAY():
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
         mcts = MonteCarloTreeSearch(state, anet, sm)
+        #FOR TESTING
+        replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
         visualizer = HEX_BOARD_VISUALIZER(config.board_size)
         visualizer.update_board(state[0].get_cells())
         while not sm.isGameOver(state):
-            bestAction = mcts.search()
+            bestAction = mcts.search(random_move=True)
             sm.makeMove(bestAction, state)
+            x_train, y_train = mcts.extract_training_data()
+            replay_buffer.add(x_train, y_train)
             mcts.update_root(bestAction)
             visualizer.update_board(state[0].get_cells())
             print(f"Player {state[1]} took: ", bestAction)
         print(f"Player {state[1] * -1} wins!")
-        x_train, y_train = mcts.extract_training_data()
-        print(x_train[0])
-        print(y_train[0])
-        print(x_train[20])
-        print(y_train[20])
-        print(x_train[-1])
-        print(y_train[-1])
         visualizer.close()
 
     def search_and_train_hex(self):
@@ -75,20 +72,19 @@ class PLAY():
         loss = []
         mae = []
         visualizer = HEX_BOARD_VISUALIZER(config.board_size)
-        visualizer.update_board(state[0].get_state_list())
+        visualizer.update_board(state[0].get_cells())
         replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
         for i in range(config.num_episodes):
             print(i)
             while not sm.isGameOver(state):
-                mcts.search()
-                bestAction = mcts.best_action()
+                bestAction = mcts.search()
                 print(bestAction)
                 sm.makeMove(bestAction, state)
+                x_train, y_train = mcts.extract_training_data()
+                replay_buffer.add(x_train, y_train)
                 mcts.update_root(bestAction)
-                visualizer.update_board(state[0].get_state_list())
+                visualizer.update_board(state[0].get_cells())
             sm.increment_episode() #must be done here to avoid incrementing episode when simulations reach end state.
-            x_train, y_train = mcts.extract_training_data()
-            replay_buffer.add(x_train, y_train)
             training_score = (anet.train_model(replay_buffer.get_all()))
             loss.append(training_score[0])
             acc.append(training_score[1])
@@ -96,7 +92,10 @@ class PLAY():
             state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
-            if i % (config.num_episodes // config.M) == 0:
+            if config.num_episodes // config.M == 0:
+                if i == 0:
+                    anet.save_model()
+            elif i % (config.num_episodes // config.M) == 0:
                 anet.save_model(i + 1)
         print(acc)
 
@@ -215,14 +214,12 @@ class PLAY():
             game_counter += 1
             print(f"Game {game_counter} finished")
             x_train, y_train = mcts.extract_training_data()
-            print(x_train, y_train)
             replay_buffer.add(x_train, y_train)
             print(f"Replay buffer size: {replay_buffer.get_size()}")
         replay_buffer.save(f"training_data/hex_training_data_{game_counter}games_AA")
 
     def train_hex_actor(self):
         replay_buffer = REPLAY_BUFFER(10000000)
-        print(replay_buffer.get_size())
         replay_buffer.load(f"training_data/hex_100games_10000rollouts.npz")
         print(replay_buffer.get_size())
         

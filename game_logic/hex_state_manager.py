@@ -91,30 +91,28 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
         return legal_moves_list
     
     def findMove(self, state, actor, greedy=False, random_move=False) -> tuple[int, int]:
-
         if random_move:
             return random.choice(self.getLegalMoves(state))
-
-        all_moves = self.find_all_moves()
-        legal_moves = self.getLegalMovesList(state)
 
         self.epsilon = 1 - self.current_episode / config.num_episodes
 
         if not greedy and self.epsilon > random.random():
-                move = random.choice(self.getLegalMoves(state))
+            return random.choice(self.getLegalMoves(state))
+        
+        all_moves = self.find_all_moves()
+        legal_moves = self.getLegalMovesList(state)
         
         probabilities = actor.compute_move_probabilities(state[0].get_ann_input(state[1]))[0]
-        probabilities = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(len(legal_moves))]
+        probabilities = [probabilities[i] if legal_moves[i] == 1 else 0 for i in range(config.board_size**2)]
 
         if sum(probabilities) == 0:
-            move = random.choice(self.getLegalMoves(state))
+            return random.choice(self.getLegalMoves(state))
         else:
             probabilites_normalized = [x / sum(probabilities) for x in probabilities]
             if greedy:
                 greedy_index = np.argmax(probabilites_normalized)
-                move = all_moves[greedy_index]
+                return all_moves[greedy_index]
             else:  
-                move = random.choices(population = all_moves, weights = probabilites_normalized)[0]
-        return move
+                return random.choices(population = all_moves, weights = probabilites_normalized)[0]
     
     

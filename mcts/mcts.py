@@ -12,7 +12,7 @@ import time
 
 
 class MCTSNode(Node):
-    def __init__(self, state, parent=None, action=None):
+    def __init__(self, state, parent=None, action=None, visits=0):
         # name = str(state[0])
         super().__init__(".", parent=parent)
         self.state = state
@@ -20,11 +20,11 @@ class MCTSNode(Node):
         self.win_score_1 = 0
         self.win_score_2 = 0
         self.draw = 0
-        self.visits = 0
+        self.visits = visits
 
 class MonteCarloTreeSearch:
     def __init__(self, root_state, actor_network, state_manager):
-        self.root = MCTSNode(copy.deepcopy(root_state))
+        self.root = MCTSNode(copy.deepcopy(root_state), visits=1) #Set root visits to 1 to avoid log of zero
         self.actor_network = actor_network
         self.state_manager = state_manager
         self.all_moves = self.state_manager.find_all_moves()
@@ -93,6 +93,8 @@ class MonteCarloTreeSearch:
     @staticmethod
     def u(s, a):
         # Return the UCT exploration value for a given state and action
+        if (s.visits) / (1 + a.visits) <= 1:
+            return 0
         return config.c * np.sqrt(math.log((s.visits) / (1 + a.visits)))
  
     def search(self, random_move=False):
@@ -104,6 +106,7 @@ class MonteCarloTreeSearch:
             node = self.select_node()
             if not self.state_manager.isGameOver(node.state):  
                 self.expand_node(node)
+                node = random.choice(node.children)
             self.rollout(node, random_move=random_move)
         return self.best_action()
 
@@ -118,6 +121,7 @@ class MonteCarloTreeSearch:
             raise ValueError(f"Invalid move: {move}")
 
     def extract_training_data(self):
+        original_root = self.root
         while self.root.parent:
             self.root = self.root.parent
         training_data = {"x_train": [], "y_train": []}
@@ -140,6 +144,7 @@ class MonteCarloTreeSearch:
                     x_train = node.state[0].get_ann_input(node.state[1])
                     training_data["x_train"].append(x_train[0])
                     training_data["y_train"].append(visits_list)
+        self.root = original_root
         return training_data["x_train"], training_data["y_train"]
 
 

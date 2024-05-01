@@ -9,9 +9,9 @@ nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 1
-num_search_games = 100
-time_limit = 30 #set to 0 for no time limit
+num_episodes = 20
+num_search_games = 1000
+time_limit = 0 #set to 0 for no time limit
 c = 1.3
 epsilon = 1
 replay_buffer_size = 1000000
