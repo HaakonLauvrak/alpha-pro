@@ -71,7 +71,7 @@ class PLAY():
         """
         Play a game of HEX using MCTS with ANET
         """
-        sm = HEX_STATE_MANAGER()
+        sm = HEX_STATE_MANAGER(0)
         anet = ANET("training_net")
         state = [HEX_BOARD(config.board_size), 1]
         mcts = MonteCarloTreeSearch(state, anet, sm)
@@ -81,10 +81,10 @@ class PLAY():
         visualizer = HEX_BOARD_VISUALIZER(config.board_size)
         visualizer.update_board(state[0].get_cells())
         replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
-        for i in range(config.num_episodes):
+        for i in range(config.num_episodes + 1):
             print(i)
             while not sm.isGameOver(state):
-                bestAction = mcts.search()
+                bestAction = mcts.search(random_move=True)
                 print(bestAction)
                 sm.makeMove(bestAction, state)
                 x_train, y_train = mcts.extract_training_data()
@@ -92,18 +92,17 @@ class PLAY():
                 mcts.update_root(bestAction)
                 visualizer.update_board(state[0].get_cells())
             sm.increment_episode() #must be done here to avoid incrementing episode when simulations reach end state.
-            training_score = (anet.train_model(replay_buffer.get_all()))
-            loss.append(training_score[0])
-            acc.append(training_score[1])
-            mae.append(training_score[2])
+            # training_score = (anet.train_model(replay_buffer.get_all()))
+            # loss.append(training_score[0])
+            # acc.append(training_score[1])
+            # mae.append(training_score[2])
             state = [HEX_BOARD(config.board_size), 1 if i % 2 == 0 else -1]
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
-            if config.num_episodes // config.M == 0:
-                if i == 0:
-                    anet.save_model()
-            elif i % (config.num_episodes // config.M) == 0:
-                anet.save_model(i + 1)
+           
+            if i == 0 or (i + 1) % (config.num_episodes // config.M) == 0:
+                anet.train_model(replay_buffer.get_all())
+                anet.save_model(i)
         print(acc)
 
         fig = plt.figure()
@@ -167,23 +166,26 @@ class PLAY():
             state = [board, 1]
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
-        print(acc)
+        # print(acc)
         print("Done")
 
-    def topp(self, models: list, rounds):
+    def topp(self, models: list):
         """
         Takes a list of four models and plays a round robin tournament between them
         """
+        rounds = config.G
         players = []
+
         anet = ANET("Player0")
         players.append(anet)
+
         for i in range(len(models)):
             anet = ANET(f"Player{i + 1}")
             model = anet.load_model_by_name(models[i])
             anet.set_model(model)
             players.append(anet)
 
-        sm = HEX_STATE_MANAGER()
+        sm = HEX_STATE_MANAGER(epsilon=0)
         tournament = Tournament(players, sm, rounds, "hex")
         results = tournament.play_tournament()
         main_dict = {}
@@ -214,7 +216,7 @@ class PLAY():
         game_counter = 0
         for i in range(config.num_episodes):
             if replay_buffer.get_size() == config.replay_buffer_size:
-                replay_buffer.save(f"training_data/hex_training_data_{game_counter}games")
+                replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AA")
                 replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
             if i % 2 == 0:
                 state = [HEX_BOARD(config.board_size), -1]
@@ -241,13 +243,15 @@ class PLAY():
         """
         replay_buffer = REPLAY_BUFFER(10000000)
         replay_buffer.load(f"training_data/hex_100games_10000rollouts.npz")
-        print(replay_buffer.get_size())
+
+        anet = ANET("training_net")
+        anet.train_model(replay_buffer.get_all())
+        anet.save_model(100)
         
         acc = []
         loss = []
         mae = []
 
-        anet = ANET("training_net")
         training_score = anet.train_model(replay_buffer.get_all())
         loss.append(training_score[0])
         acc.append(training_score[1])
