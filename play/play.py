@@ -176,8 +176,7 @@ class PLAY():
         rounds = config.G
         players = []
 
-        anet = ANET("Player0")
-        players.append(anet)
+        
 
         for i in range(len(models)):
             anet = ANET(f"Player{i + 1}")
@@ -228,14 +227,16 @@ class PLAY():
                 mcts.search(random_move=True)
                 bestAction = mcts.best_action()
                 sm.makeMove(bestAction, state)
+                x_train, y_train = mcts.extract_training_data()
+                replay_buffer.add(x_train, y_train)
                 mcts.update_root(bestAction)
-            
             game_counter += 1
             print(f"Game {game_counter} finished")
-            x_train, y_train = mcts.extract_training_data()
-            replay_buffer.add(x_train, y_train)
             print(f"Replay buffer size: {replay_buffer.get_size()}")
-        replay_buffer.save(f"training_data/hex_training_data_{game_counter}games_AA")
+            if i == config.num_episodes // 3 or i == 2 * config.num_episodes // 3: 
+                replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AA")
+
+        replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AA")
 
     def train_hex_actor(self):
         """

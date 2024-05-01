@@ -167,7 +167,6 @@ class HEX_STATE_MANAGER(STATE_MANAGER):
             The move to be made.
         """
         if random_move:
-            print("Random move")
             return random.choice(self.getLegalMoves(state))
         
         if not greedy and (self.epsilon - self.current_episode / config.num_episodes) > random.random():
