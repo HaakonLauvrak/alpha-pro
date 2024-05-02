@@ -1,6 +1,6 @@
 from play.play import PLAY
 
-models = ["hex_4_0ep_1000searches", "hex_4_67ep_1000searches", "hex_4_100ep_1000searches", "hex_4_200ep_1000searches"]
+models = ["hex_4_0ep_1000searches", "hex_4_200ep_1000searches", "hex_4_1001ep_1000searches", "hex_4_2501ep_1000searches"]
 
 if __name__ == "__main__":
     # PLAY().search_and_train_hex()

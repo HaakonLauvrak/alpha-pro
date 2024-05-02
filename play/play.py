@@ -174,7 +174,7 @@ class PLAY():
         game_counter = 0
         for i in range(config.num_episodes):
             if replay_buffer.get_size() == config.replay_buffer_size:
-                replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AA")
+                replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AAA")
                 replay_buffer = REPLAY_BUFFER(config.replay_buffer_size)
             if i % 2 == 0:
                 state = [HEX_BOARD(config.board_size), -1]
@@ -192,38 +192,36 @@ class PLAY():
             game_counter += 1
             print(f"Game {game_counter} finished")
             print(f"Replay buffer size: {replay_buffer.get_size()}")
-            if i == config.num_episodes // 3 or i == 2 * config.num_episodes // 3: 
-                replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AA")
+            if i == config.num_episodes // 5 or i == config.num_episodes // 3 or i == config.num_episodes // 2 or i == 2 * config.num_episodes // 3:
+                replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AAA")
 
-        replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AA")
+        replay_buffer.save(f"training_data/hex{config.board_size}_training_data_{game_counter}games_AAA")
 
     def train_hex_actor(self):
         """
         Trains the actor network for HEX using previously generated training data.
         """
-        replay_buffer = REPLAY_BUFFER(10000000)
-        replay_buffer.load(f"training_data/hex4_training_data_67games_AA.npz")
-        anet = ANET("training_net_67")
-        config.epochs = 1
-        anet.train_model(replay_buffer.get_all())
-        anet.save_model(67)
-
-        replay_buffer.load(f"training_data/hex4_training_data_100games_AA.npz")
-        anet = ANET("training_net_100")
-        config.epochs = 10
-        anet.load_model_by_name("hex_4_67ep_1000searches")
-        anet.train_model(replay_buffer.get_all())
-        anet.save_model(100)
-
-        replay_buffer.load(f"training_data/hex4_training_data_100games_A.npz")
-        anet = ANET("training_net_200")
-        config.epochs = 20
-        anet.load_model_by_name("hex_4_100ep_1000searches")
-        anet.train_model(replay_buffer.get_all())
-        anet.save_model(200)
 
         anet = ANET("training_net_0")
         anet.save_model(0)
+
+        replay_buffer = REPLAY_BUFFER(10000000)
+ 
+        replay_buffer.load(f"training_data/hex4_training_data_100games_AA.npz")
+        replay_buffer.load(f"training_data/hex4_training_data_100games_A.npz")
+        anet = ANET("training_net_200")
+        anet.train_model(replay_buffer.get_all())
+        anet.save_model(200)
+
+        replay_buffer.load(f"training_data/hex4_training_data_1001games_AAA.npz")
+        anet = ANET("training_net_1001")
+        anet.train_model(replay_buffer.get_all())
+        anet.save_model(1001)
+
+        replay_buffer.load(f"training_data/hex4_training_data_2501games_AAA.npz")
+        anet = ANET("training_net_2501")
+        anet.train_model(replay_buffer.get_all())
+        anet.save_model(2501)
         
         # acc = []
         # loss = []
