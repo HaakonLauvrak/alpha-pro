@@ -62,9 +62,11 @@ class PLAY():
         """
         Play a game of HEX using MCTS with ANET
         """
+        saved_anets = []
         sm = HEX_STATE_MANAGER(0)
         anet = ANET("0 games")
         anet.save_model(0)
+        saved_anets.append(anet)
         state = [HEX_BOARD(config.board_size), 1]
         mcts = MonteCarloTreeSearch(state, anet, sm)
         
@@ -88,12 +90,14 @@ class PLAY():
             sm.setState(state)
             mcts = MonteCarloTreeSearch(state, anet, sm)
            
-            if (i + 1) % (config.num_episodes // config.M) == 0:
+            if (i + 1) % (config.num_episodes // (config.M - 1)) == 0:
                 anet = ANET(f"{i + 1} games")
                 anet.train_model(replay_buffer.get_all())
                 anet.save_model(i+1)
+                saved_anets.append(anet)
 
         print("Done")
+        return saved_anets
     
 
     def search_and_train_nim(self):
@@ -130,18 +134,24 @@ class PLAY():
         # print(acc)
         print("Done")
 
-    def topp(self, models: list):
+    def topp(self, models: list, names=True):
         """
-        Takes a list of four models and plays a round robin tournament between them
+        Takes a list of four models and plays a round robin tournament between them.
+
+        Args:
+            models: A list of ANET objects.
+            names: A boolean value indicating whether the models are ANET objects or model names.
         """
         rounds = config.G
-        players = []
-
-        for i in range(len(models)):
-            anet = ANET(f"Player{i + 1}")
-            model = anet.load_model_by_name(models[i])
-            anet.set_model(model)
-            players.append(anet)
+        if names:
+            players = []
+            for i in range(len(models)):
+                anet = ANET(f"Player{i + 1}")
+                model = anet.load_model_by_name(models[i])
+                anet.set_model(model)
+                players.append(anet)
+        else:
+            players = models
 
         sm = HEX_STATE_MANAGER(epsilon=0)
         tournament = Tournament(players, sm, rounds, "hex")

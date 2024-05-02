@@ -2,15 +2,15 @@
 game = "hex" 
 
 #The size (k) of the k x k Hex board, where 3 ≤ k ≤ 10.
-board_size = 4
+board_size = 9
 
 #The number of initial stones N in nim and the number of stones that can be removed each turn K
 nim_N = 8
 nim_K = 4
 
 #Standard MCTS parameters, such as the number of episodes, number of search games per actual move, etc.
-num_episodes = 5000
-num_search_games = 1000
+num_episodes = 20
+num_search_games = 100
 time_limit = 0 #set to 0 for no time limit
 c = 1.3
 epsilon = 1
@@ -20,7 +20,7 @@ replay_buffer_size = 10000000
 #with any of the following activation functions for hidden nodes: linear, sigmoid, tanh, RELU.
 learning_rate = 0.005
 epochs = 20
-batch_size = 64
+batch_size = 128
 dimensions_conv = [32] #hex
 dimensions_dense = [128, 256, 128] #hex
 dimensions_nim = [64, 32, 16, 8] #nim

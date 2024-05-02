@@ -9,4 +9,10 @@ if __name__ == "__main__":
     # PLAY().search_and_train_nim()
     # PLAY().play_hex_mcts()
     # PLAY().play_nim_mcts()
-    PLAY().topp(models)
+    
+    """ Play a TOPP between cached models"""
+    # PLAY().topp(models)
+
+    """Create models and run a TOPP between them"""
+    models = PLAY().search_and_train_hex()
+    # PLAY().topp(models, names=False)
